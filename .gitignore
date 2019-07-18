@@ -1,0 +1,8 @@
+# IntelliJ config
+
+.idea
+*.iml
+
+# IntelliJ compiled
+
+out
