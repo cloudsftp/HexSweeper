@@ -2,27 +2,37 @@ package Logic
 
 import kotlin.system.exitProcess
 
-class Cell(private val bomb: Boolean, private var marked: Boolean = false, private var opened :Boolean = false) {
+class Cell(private val bomb: Boolean, private var state: CellState = CellState.closed) {
 
     fun open() {
-        println("Opening Cell")
+        if (state != CellState.flagged) {
+            println("Opening Cell")
 
-        if (bomb) {
-            println("Game Over!")
-            exitProcess(0)
+            if (bomb) {
+                println("Game Over!")
+                exitProcess(0)
+
+            }
+
+            state = CellState.opened
+
+        } else {
+            println("Cannot open flagged Cell")
 
         }
-
-        opened = true
 
     }
 
     override fun toString(): String {
-        return when {
-            opened -> "+"
-            marked -> "-"
-            else -> "?"
+        return when (state) {
+            CellState.opened -> " "
+            CellState.closed -> "?"
+            CellState.flagged -> ">"
         }
     }
 
+}
+
+enum class CellState {
+    closed, opened, flagged
 }
