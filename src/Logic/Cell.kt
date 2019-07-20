@@ -2,7 +2,9 @@ package Logic
 
 import kotlin.system.exitProcess
 
-class Cell(private val bomb: Boolean, private var state: CellState = CellState.closed) {
+class Cell(val bomb: Boolean, private var state: CellState = CellState.closed) {
+
+    var numOfBombs: Int = 0
 
     fun open() {
         if (state != CellState.flagged) {
@@ -25,9 +27,9 @@ class Cell(private val bomb: Boolean, private var state: CellState = CellState.c
 
     override fun toString(): String {
         return when (state) {
-            CellState.opened -> " "
+            CellState.opened -> if (numOfBombs == 0) " " else "$numOfBombs"
             CellState.closed -> "?"
-            CellState.flagged -> ">"
+            CellState.flagged -> "x"
         }
     }
 
