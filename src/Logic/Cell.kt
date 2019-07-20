@@ -4,6 +4,8 @@ import kotlin.system.exitProcess
 
 class Cell(val bomb: Boolean, private var state: CellState = CellState.closed) {
 
+    fun constructor() = Cell(false, CellState.fake)
+
     var numOfBombs: Int = 0
 
     fun open() {
@@ -27,7 +29,8 @@ class Cell(val bomb: Boolean, private var state: CellState = CellState.closed) {
 
     override fun toString(): String {
         return when (state) {
-            CellState.opened -> if (numOfBombs == 0) " " else "$numOfBombs"
+            CellState.fake -> " "
+            CellState.opened -> if (numOfBombs == 0) "." else "$numOfBombs"
             CellState.closed -> "?"
             CellState.flagged -> "x"
         }
@@ -36,5 +39,5 @@ class Cell(val bomb: Boolean, private var state: CellState = CellState.closed) {
 }
 
 enum class CellState {
-    closed, opened, flagged
+    closed, opened, flagged, fake
 }
