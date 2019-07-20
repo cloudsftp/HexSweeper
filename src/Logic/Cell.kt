@@ -4,7 +4,7 @@ import kotlin.system.exitProcess
 
 class Cell(val bomb: Boolean, private var state: CellState = CellState.closed) {
 
-    fun constructor() = Cell(false, CellState.fake)
+    constructor(): this(false, CellState.fake)
 
     var numOfBombs: Int = 0
 
