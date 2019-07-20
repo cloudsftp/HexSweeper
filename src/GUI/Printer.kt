@@ -17,7 +17,7 @@ fun printField(field: Field) {
     print(space(4))
 
     for (i in 0 until field.maxWidth)
-        print(" $i${space(4)}")
+        print("${space(1)}$i${space(4)}")
 
     println("\n")
 
