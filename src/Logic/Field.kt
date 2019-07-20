@@ -1,5 +1,7 @@
 package Logic
 
+import kotlin.random.Random.Default.nextBoolean
+
 class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
 
     init {
@@ -26,7 +28,8 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
 
         var numOfBombs = 0
 
-        fun checkCellForBomb(i: Int, j: Int) { if (isCellBombSafe(i, j)) numOfBombs++ }
+        fun checkCellForBomb(i: Int, j: Int) = if (isCellBombSafe(i, j)) numOfBombs++
+                else numOfBombs
 
         // Offset for row above and row beneath
         val offset = i % 2
@@ -39,7 +42,7 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
         checkCellForBomb(i - 1, j - offset + 1)
 
         // Same row
-        checkCellForBomb(i, j -1)
+        checkCellForBomb(i, j - 1)
         checkCellForBomb(i, j + 1)
 
         // One row beneath
@@ -51,6 +54,25 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
 
         cells[i][j].numOfBombs = numOfBombs
 
+    }
+
+    companion object {
+        fun build(n: Int, m:Int): Field {
+            val list = mutableListOf<Array<Cell>>()
+
+            for (i in 0 until n) {
+                val rowList = mutableListOf<Cell>()
+
+                for (j in 0 until m + (i % 2) - 1)
+                    rowList.add(Cell(nextBoolean()))
+
+                list.add(rowList.toTypedArray())
+
+            }
+
+            return Field(list.toTypedArray())
+
+        }
     }
 
 }
