@@ -19,6 +19,14 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
 
     override fun iterator(): Iterator<Array<Cell>> = cells.iterator()
 
+
+    fun open(i: Int, j: Int) {
+
+        cells[i][j].open()
+
+    }
+
+
     fun determineNumOfBombs(i: Int, j: Int) {
 
         fun isCellBombSafe(i: Int, j: Int): Boolean
@@ -34,9 +42,6 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
         // Offset for row above and row beneath
         val offset = i % 2
 
-        // Two rows above
-        checkCellForBomb(i - 2, j)
-
         // One row above
         checkCellForBomb(i - 1, j - offset)
         checkCellForBomb(i - 1, j - offset + 1)
@@ -48,9 +53,6 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
         // One row beneath
         checkCellForBomb(i + 1, j - offset)
         checkCellForBomb(i + 1, j - offset + 1)
-
-        // Two rows beneath
-        checkCellForBomb(i + 2, j)
 
         cells[i][j].numOfBombs = numOfBombs
 

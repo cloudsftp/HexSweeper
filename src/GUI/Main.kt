@@ -25,4 +25,6 @@ fun periodic(field: Field) {
     print("Spalte: ")
     val j = scan.nextLine().trim().toInt()
 
+    field.open(i, j)
+
 }
