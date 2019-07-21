@@ -56,8 +56,11 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
 
     }
 
+    constructor(n: Int, m:Int) : this(buildArrayWithDim(n, m))
+
     companion object {
-        fun build(n: Int, m:Int): Field {
+
+        private fun buildArrayWithDim(n: Int, m: Int): Array<Array<Cell>> {
             val list = mutableListOf<Array<Cell>>()
 
             for (i in 0 until n) {
@@ -70,9 +73,10 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
 
             }
 
-            return Field(list.toTypedArray())
+            return list.toTypedArray()
 
         }
+
     }
 
 }
