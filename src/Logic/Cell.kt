@@ -2,7 +2,7 @@ package Logic
 
 import kotlin.system.exitProcess
 
-class Cell(val bomb: Boolean, private var state: CellState = CellState.closed) {
+class Cell(val bomb: Boolean, var state: CellState = CellState.closed) {
 
     constructor(): this(false, CellState.fake)
 
