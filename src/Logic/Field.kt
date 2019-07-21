@@ -1,6 +1,6 @@
 package Logic
 
-import kotlin.random.Random.Default.nextBoolean
+import kotlin.random.Random.Default.nextDouble
 
 class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
 
@@ -58,18 +58,20 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
 
     }
 
-    constructor(n: Int, m:Int) : this(buildArrayWithDim(n, m))
+    constructor(n: Int, m:Int, prob: Double) : this(buildArrayWithDim(n, m, prob))
+    constructor(n: Int, m: Int) : this(n, m, 0.2)
 
     companion object {
 
-        private fun buildArrayWithDim(n: Int, m: Int): Array<Array<Cell>> {
+        private fun buildArrayWithDim(n: Int, m: Int, prob: Double): Array<Array<Cell>> {
+
             val list = mutableListOf<Array<Cell>>()
 
             for (i in 0 until n) {
                 val rowList = mutableListOf<Cell>()
 
                 for (j in 0 until m + (i % 2) - 1)
-                    rowList.add(Cell(nextBoolean()))
+                    rowList.add(Cell(nextDouble(1.0) < prob))
 
                 list.add(rowList.toTypedArray())
 
