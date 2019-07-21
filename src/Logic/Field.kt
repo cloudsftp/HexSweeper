@@ -31,14 +31,9 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
 
 
     fun open(i: Int, j: Int) {
-        if (cells[i][j].state != CellState.opened) {
-            cells[i][j].open()
-
-            if (cells[i][j].numOfBombs == 0)
-                for ((I, J) in getAdjacentIndices(i, j))
-                    open(I, J)
-
-        }
+        if (cells[i][j].open() && cells[i][j].numOfBombs == 0)
+            for ((I, J) in getAdjacentIndices(i, j))
+                open(I, J)
 
     }
 
