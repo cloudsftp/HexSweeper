@@ -21,7 +21,7 @@ class Main : ApplicationListener {
 
         batch.begin()
 
-        hexagon = Texture("hexagonsmall.png")
+        hexagon = Texture("res/hexagonsmall.png")
 
         batch.draw(hexagon, 1f, 1f)
 
