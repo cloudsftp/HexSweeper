@@ -37,7 +37,7 @@ class Main : ApplicationListener {
         pixmap.setColor(Color.WHITE)
         pixmap.fill()
 
-        val field = Field(3, 3)
+        val field = Field(5, 3)
 
         var offsetX: Int
         val offsetY = 30
@@ -45,10 +45,10 @@ class Main : ApplicationListener {
         val hexagonPixmap = Pixmap(hexagonFileHandle)
 
         for (i in 0 until field.cells.size) {
-            offsetX = if (i % 2 == 0) 75 else 0
+            offsetX = if (i % 2 == 0) 77 else 0
 
             for (j in 0 until field.cells[i].size)
-                pixmap.drawPixmap(hexagonPixmap, j * 150 + offsetX, i * 45 + offsetY)
+                pixmap.drawPixmap(hexagonPixmap, j * 153 + offsetX, i * 45 + offsetY)
 
         }
 
