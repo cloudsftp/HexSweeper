@@ -1,5 +1,7 @@
 package GUIgdx
 
+import Logic.Cell
+import Logic.CellState
 import Logic.Field
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
@@ -22,6 +24,7 @@ class Main : ApplicationListener, InputProcessor {
     internal lateinit var hexagonOpenedTextures: Array<Texture>
     internal lateinit var hexagonClosedTexture: Texture
     internal lateinit var hexagonFlaggedTexture: Texture
+    internal lateinit var hexagonFakeTexture: Texture
 
     override fun create() {
         batch = SpriteBatch()
@@ -37,6 +40,8 @@ class Main : ApplicationListener, InputProcessor {
 
         }
 
+        hexagonOpenedTextures = hexagonOpenedTexturesList.toTypedArray()
+
         val hexagonClosedFileHandle = Gdx.files.internal("res/cells/closed.png")
         val hexagonClosedPixmap = Pixmap(hexagonClosedFileHandle)
         hexagonClosedTexture = Texture(hexagonClosedPixmap)
@@ -48,6 +53,12 @@ class Main : ApplicationListener, InputProcessor {
         hexagonFlaggedTexture = Texture(hexagonFlaggedPixmap)
 
         hexagonFlaggedPixmap.dispose()
+
+        val hexagonFakeFileHandle = Gdx.files.internal("res/cells/fake.png")
+        val hexagonFakePixmap = Pixmap(hexagonFakeFileHandle)
+        hexagonFakeTexture = Texture(hexagonFakePixmap)
+
+        hexagonFakePixmap.dispose()
 
         Gdx.input.inputProcessor = this
 
@@ -76,6 +87,14 @@ class Main : ApplicationListener, InputProcessor {
 
 
     private fun drawField() {
+        fun selectTexture(cell: Cell) = when(cell.state) {
+            CellState.closed -> hexagonClosedTexture
+            CellState.flagged -> hexagonFlaggedTexture
+            CellState.fake -> hexagonFakeTexture
+            CellState.opened -> hexagonOpenedTextures[cell.numOfBombs]
+
+        }
+
         batch.begin()
 
         var offsetX: Int
@@ -90,7 +109,7 @@ class Main : ApplicationListener, InputProcessor {
             offsetX += if (i % 2 == 0) 77 else 0
 
             for (j in 0 until field.cells[i].size) {
-                val hexagonSprite = Sprite(hexagonClosedTexture)
+                val hexagonSprite = Sprite(selectTexture(field.cells[i][j]))
                 hexagonSprite.setPosition(j * 153f + offsetX, i * 45f + offsetY)
                 hexagonSprite.draw(batch)
 
@@ -120,7 +139,7 @@ class Main : ApplicationListener, InputProcessor {
         for (row in hexagonSprites)
             for (sprite in row)
                 if (clickInSprite(sprite, p0, p1)) {
-                    val i = hexagonSprites.indexOf(row)
+                    val i = hexagonSprites.size - hexagonSprites.indexOf(row) - 1
                     val j = row.indexOf(sprite)
 
                     println("$i, $j")
