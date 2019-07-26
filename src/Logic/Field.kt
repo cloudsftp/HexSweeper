@@ -48,17 +48,19 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
 
         val offset = i % 2
 
+        // Two rows above
+        addIndicesSafe(i - 2, j)
+
         // One row above
         addIndicesSafe(i - 1, j - offset)
         addIndicesSafe(i - 1, j - offset + 1)
 
-        // Same row
-        addIndicesSafe(i, j - 1)
-        addIndicesSafe(i, j + 1)
-
         // One row beneath
         addIndicesSafe(i + 1, j - offset)
         addIndicesSafe(i + 1, j - offset + 1)
+
+        // Two rows beneath
+        addIndicesSafe(i + 2, j)
 
         return list
 
