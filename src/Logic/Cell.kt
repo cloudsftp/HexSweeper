@@ -31,6 +31,15 @@ class Cell(val bomb: Boolean, var state: CellState = CellState.closed) {
 
     }
 
+    fun toggleFlag() {
+        if (state == CellState.closed)
+            state = CellState.flagged
+
+        else if (state == CellState.flagged)
+            state = CellState.closed
+
+    }
+
     override fun toString(): String {
         return when (state) {
             CellState.fake -> " "

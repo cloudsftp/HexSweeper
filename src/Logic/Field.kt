@@ -37,6 +37,11 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
 
     }
 
+    fun toggleFlag(i: Int, j: Int) {
+        cells[i][j].toggleFlag()
+
+    }
+
     fun getAdjacentIndices(i: Int, j: Int): List<Pair<Int, Int>> {
         val list = mutableListOf<Pair<Int, Int>>()
 

@@ -144,7 +144,11 @@ class Main : ApplicationListener, InputProcessor {
 
                     println("$i, $j")
 
-                    field.open(i, j)
+                    if (p3 == 0)
+                        field.open(i, j)
+
+                    else
+                        field.toggleFlag(i, j)
 
                 }
 
