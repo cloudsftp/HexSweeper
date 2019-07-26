@@ -4,10 +4,22 @@ import kotlin.random.Random.Default.nextDouble
 
 class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
 
+    constructor(n: Int, m:Int, prob: Double = 0.2) : this(buildArrayWithDim(n, m, prob))
+
     init {
         for (i in 0 until cells.size)
             for (j in 0 until cells[i].size)
-                determineNumOfBombs(i, j)
+                determineNumOfAdjacentBombs(i, j)
+
+    }
+
+    fun determineNumOfAdjacentBombs(i: Int, j: Int) {
+        var numOfBombs = 0
+
+        for ((I: Int, J: Int) in getAdjacentIndices(i, j))
+            if (cells[I][J].bomb) numOfBombs++
+
+        cells[i][j].numOfBombs = numOfBombs
 
     }
 
@@ -17,49 +29,42 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
     val maxHeight: Int
     get()  = cells.size
 
-    override fun iterator(): Iterator<Array<Cell>> = cells.iterator()
-
 
     fun open(i: Int, j: Int) {
-
-        cells[i][j].open()
+        if (cells[i][j].open() && cells[i][j].numOfBombs == 0)
+            for ((I, J) in getAdjacentIndices(i, j))
+                open(I, J)
 
     }
 
+    fun getAdjacentIndices(i: Int, j: Int): List<Pair<Int, Int>> {
+        val list = mutableListOf<Pair<Int, Int>>()
 
-    fun determineNumOfBombs(i: Int, j: Int) {
+        fun addIndicesSafe(i: Int, j: Int) {
+            if (i > -1 && i < cells.size && j > -1 && j < cells[i].size)
+                list.add(Pair(i, j))
 
-        fun isCellBombSafe(i: Int, j: Int): Boolean
-                =  i > -1 && i < cells.size          // checks i
-                && j > -1 && j < cells[i].size       // checks j
-                && cells[i][j].bomb
+        }
 
-        var numOfBombs = 0
-
-        fun checkCellForBomb(i: Int, j: Int) = if (isCellBombSafe(i, j)) numOfBombs++
-                else numOfBombs
-
-        // Offset for row above and row beneath
         val offset = i % 2
 
         // One row above
-        checkCellForBomb(i - 1, j - offset)
-        checkCellForBomb(i - 1, j - offset + 1)
+        addIndicesSafe(i - 1, j - offset)
+        addIndicesSafe(i - 1, j - offset + 1)
 
         // Same row
-        checkCellForBomb(i, j - 1)
-        checkCellForBomb(i, j + 1)
+        addIndicesSafe(i, j - 1)
+        addIndicesSafe(i, j + 1)
 
         // One row beneath
-        checkCellForBomb(i + 1, j - offset)
-        checkCellForBomb(i + 1, j - offset + 1)
+        addIndicesSafe(i + 1, j - offset)
+        addIndicesSafe(i + 1, j - offset + 1)
 
-        cells[i][j].numOfBombs = numOfBombs
+        return list
 
     }
 
-    constructor(n: Int, m:Int, prob: Double) : this(buildArrayWithDim(n, m, prob))
-    constructor(n: Int, m: Int) : this(n, m, 0.2)
+    override fun iterator(): Iterator<Array<Cell>> = cells.iterator()
 
     companion object {
 

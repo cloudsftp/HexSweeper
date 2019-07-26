@@ -8,8 +8,11 @@ class Cell(val bomb: Boolean, var state: CellState = CellState.closed) {
 
     var numOfBombs: Int = 0
 
-    fun open() {
-        if (state != CellState.flagged) {
+    fun open(): Boolean {
+        if (state != CellState.closed) {
+            println("Cannot open Cell")
+
+        } else {
             println("Opening Cell")
 
             if (bomb) {
@@ -20,10 +23,11 @@ class Cell(val bomb: Boolean, var state: CellState = CellState.closed) {
 
             state = CellState.opened
 
-        } else {
-            println("Cannot open flagged Cell")
+            return true
 
         }
+
+        return false
 
     }
 
@@ -32,7 +36,7 @@ class Cell(val bomb: Boolean, var state: CellState = CellState.closed) {
             CellState.fake -> " "
             CellState.opened -> if (numOfBombs == 0) "." else "$numOfBombs"
             CellState.closed -> "?"
-            CellState.flagged -> "x"
+            CellState.flagged -> "!"
         }
     }
 
