@@ -4,7 +4,6 @@ import Logic.Field
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
-import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Pixmap
@@ -27,6 +26,8 @@ class Main : ApplicationListener, InputProcessor {
         hexagonTexture = Texture(hexagonPixmap)
 
         hexagonPixmap.dispose()
+
+        Gdx.input.inputProcessor = this
 
     }
 
@@ -60,14 +61,15 @@ class Main : ApplicationListener, InputProcessor {
         val field = Field(n, m)
 
         var offsetX: Int
-        val offsetY = 30
+        val offsetY = 60
 
         hexagonSprites = mutableListOf()
 
         for (i in 0 until field.cells.size) {
             hexagonSprites.add(mutableListOf())
 
-            offsetX = if (i % 2 == 0) 77 else 0
+            offsetX = 30
+            offsetX += if (i % 2 == 0) 77 else 0
 
             for (j in 0 until field.cells[i].size) {
                 val hexagonSprite = Sprite(hexagonTexture)
@@ -90,9 +92,9 @@ class Main : ApplicationListener, InputProcessor {
 
     override fun touchDown(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
 
-        print("Click")
+        println("Click")
 
-        return false
+        return true
 
     }
 
