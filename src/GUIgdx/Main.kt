@@ -19,16 +19,35 @@ class Main : ApplicationListener, InputProcessor {
     internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
 
     internal lateinit var batch: SpriteBatch
-    internal lateinit var hexagonTexture: Texture
+    internal lateinit var hexagonOpenedTextures: Array<Texture>
+    internal lateinit var hexagonClosedTexture: Texture
+    internal lateinit var hexagonFlaggedTexture: Texture
 
     override fun create() {
         batch = SpriteBatch()
 
-        val hexagonFileHandle = Gdx.files.internal("res/hexagonsmall.png")
-        val hexagonPixmap = Pixmap(hexagonFileHandle)
-        hexagonTexture = Texture(hexagonPixmap)
+        val hexagonOpenedTexturesList = mutableListOf<Texture>()
+        for (i in 0..6) {
+            val hexagonFileHandle = Gdx.files.internal("res/cells/opened_$i.png")
+            val hexagonPixmap = Pixmap(hexagonFileHandle)
+            val hexagonTexture = Texture(hexagonPixmap)
+            hexagonOpenedTexturesList.add(hexagonTexture)
 
-        hexagonPixmap.dispose()
+            hexagonPixmap.dispose()
+
+        }
+
+        val hexagonClosedFileHandle = Gdx.files.internal("res/cells/closed.png")
+        val hexagonClosedPixmap = Pixmap(hexagonClosedFileHandle)
+        hexagonClosedTexture = Texture(hexagonClosedPixmap)
+
+        hexagonClosedPixmap.dispose()
+
+        val hexagonFlaggedFileHandle = Gdx.files.internal("res/cells/flagged.png")
+        val hexagonFlaggedPixmap = Pixmap(hexagonFlaggedFileHandle)
+        hexagonFlaggedTexture = Texture(hexagonFlaggedPixmap)
+
+        hexagonFlaggedPixmap.dispose()
 
         Gdx.input.inputProcessor = this
 
@@ -71,7 +90,7 @@ class Main : ApplicationListener, InputProcessor {
             offsetX += if (i % 2 == 0) 77 else 0
 
             for (j in 0 until field.cells[i].size) {
-                val hexagonSprite = Sprite(hexagonTexture)
+                val hexagonSprite = Sprite(hexagonClosedTexture)
                 hexagonSprite.setPosition(j * 153f + offsetX, i * 45f + offsetY)
                 hexagonSprite.draw(batch)
 
