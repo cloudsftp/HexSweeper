@@ -97,14 +97,14 @@ class Main : ApplicationListener, InputProcessor {
         batch.begin()
 
         var offsetX: Int
-        val offsetY = 60
+        val offsetY = 30
 
         hexagonSprites = mutableListOf()
 
         for (i in 0 until field.cells.size) {
             hexagonSprites.add(mutableListOf())
 
-            offsetX = 30
+            offsetX = 50
             offsetX += if (i % 2 == 0) 77 else 0
 
             for (j in 0 until field.cells[i].size) {
@@ -161,8 +161,8 @@ class Main : ApplicationListener, InputProcessor {
     }
 
     companion object {
-        val n = 7
-        val m = 4
+        val n = 13
+        val m = 6
 
         internal lateinit var field: Field
 
