@@ -4,7 +4,7 @@ import kotlin.random.Random.Default.nextDouble
 
 class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
 
-    constructor(n: Int, m:Int, prob: Double = 0.2) : this(buildArrayWithDim(n, m, prob))
+    constructor(n: Int, m:Int, prob: Double = 0.3) : this(buildArrayWithDim(n, m, prob))
 
     init {
         for (i in 0 until cells.size)
