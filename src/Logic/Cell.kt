@@ -1,7 +1,5 @@
 package Logic
 
-import kotlin.system.exitProcess
-
 class Cell(val bomb: Boolean, var state: CellState = CellState.closed) {
 
     constructor(): this(false, CellState.fake)
@@ -17,7 +15,7 @@ class Cell(val bomb: Boolean, var state: CellState = CellState.closed) {
 
             if (bomb) {
                 println("Game Over!")
-                exitProcess(0)
+                return false
 
             }
 

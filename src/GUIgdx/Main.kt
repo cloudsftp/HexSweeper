@@ -15,9 +15,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 
 class Main : ApplicationListener, InputProcessor {
 
-    val n = 7
-    val m = 4
-    val field = Field(n, m)
     internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
 
     internal lateinit var batch: SpriteBatch
@@ -27,6 +24,8 @@ class Main : ApplicationListener, InputProcessor {
     internal lateinit var hexagonFakeTexture: Texture
 
     override fun create() {
+        reset()
+
         batch = SpriteBatch()
 
         val hexagonOpenedTexturesList = mutableListOf<Texture>()
@@ -144,17 +143,34 @@ class Main : ApplicationListener, InputProcessor {
 
                     println("$i, $j")
 
-                    if (p3 == 0)
-                        field.open(i, j)
+                    if (p3 == 0) {
+                        if (!field.open(i, j))
+                            reset()
 
-                    else
+                    } else {
                         field.toggleFlag(i, j)
+
+                    }
 
                 }
 
         drawField()
 
         return true
+
+    }
+
+    companion object {
+        val n = 7
+        val m = 4
+
+        internal lateinit var field: Field
+
+
+        fun reset() {
+            field = Field(n, m)
+
+        }
 
     }
 
