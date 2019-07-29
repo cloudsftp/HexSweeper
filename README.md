@@ -1,7 +1,11 @@
 # HexSweeper
 ### Minesweeper gone Hexagonal
 
-##### Gitflow configuration:
+This Project uses Gitflow
+
+#### Gitflow
+
+##### Configuration
 
 `git flow init`
 
@@ -19,3 +23,9 @@ Branch prefixes:
 - Version tag prefix:
 
 Hooks and Filters directory can be default
+
+##### Usage
+
+- start feature branch: `git flow feature start [name]`
+- end feature brannch: `git flow feature end [name]`
+- the same for bugfixes etc. `git flow [type] [start/end] [name]`
