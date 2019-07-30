@@ -26,7 +26,7 @@ task debug(dependsOn: classes, type: JavaExec) {
 
 task dist(type: Jar) {
     manifest {
-        attributes 'Game-Class': project.mainClassName
+        attributes 'Main-Class': project.mainClassName
     }
     from {
         configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
