@@ -1,8 +1,6 @@
-package GUIgdx
+package de.melon.hexsweeper
 
-import Logic.Cell
-import Logic.CellState
-import Logic.Field
+import de.melon.hexsweeper.logic.*
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
@@ -13,7 +11,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 
-class Main : ApplicationListener, InputProcessor {
+class Game : ApplicationListener, InputProcessor {
 
     internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
 

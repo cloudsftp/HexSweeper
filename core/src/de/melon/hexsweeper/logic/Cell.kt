@@ -1,4 +1,4 @@
-package Logic
+package de.melon.hexsweeper.logic
 
 class Cell(val bomb: Boolean, var state: CellState = CellState.closed) {
 

@@ -1,4 +1,4 @@
-package Logic
+package de.melon.hexsweeper.logic
 
 import kotlin.random.Random.Default.nextDouble
 
