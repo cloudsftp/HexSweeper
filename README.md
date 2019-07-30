@@ -1,7 +1,20 @@
 # HexSweeper
 ### Minesweeper gone Hexagonal
 
-This Project uses Gitflow
+This Project uses **Gitflow** for version control
+and **Gradle** for dependencies and builds.
+
+#### Gradle
+
+##### Run
+
+- Windows `.\gradlew.bat :desktop:run`
+- \*NIX `./gradlew :desktop:run`
+
+##### Build Jar
+
+- Windows `.\gradlew.bat :desktop:dist`
+- \*NIX `./gradlew :desktop:dist`
 
 #### Gitflow
 
