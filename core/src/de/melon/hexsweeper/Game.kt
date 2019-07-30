@@ -28,7 +28,7 @@ class Game : ApplicationListener, InputProcessor {
 
         val hexagonOpenedTexturesList = mutableListOf<Texture>()
         for (i in 0..6) {
-            val hexagonFileHandle = Gdx.files.internal("res/cells/opened_$i.png")
+            val hexagonFileHandle = Gdx.files.internal("cells/opened_$i.png")
             val hexagonPixmap = Pixmap(hexagonFileHandle)
             val hexagonTexture = Texture(hexagonPixmap)
             hexagonOpenedTexturesList.add(hexagonTexture)
@@ -39,19 +39,19 @@ class Game : ApplicationListener, InputProcessor {
 
         hexagonOpenedTextures = hexagonOpenedTexturesList.toTypedArray()
 
-        val hexagonClosedFileHandle = Gdx.files.internal("res/cells/closed.png")
+        val hexagonClosedFileHandle = Gdx.files.internal("cells/closed.png")
         val hexagonClosedPixmap = Pixmap(hexagonClosedFileHandle)
         hexagonClosedTexture = Texture(hexagonClosedPixmap)
 
         hexagonClosedPixmap.dispose()
 
-        val hexagonFlaggedFileHandle = Gdx.files.internal("res/cells/flagged.png")
+        val hexagonFlaggedFileHandle = Gdx.files.internal("cells/flagged.png")
         val hexagonFlaggedPixmap = Pixmap(hexagonFlaggedFileHandle)
         hexagonFlaggedTexture = Texture(hexagonFlaggedPixmap)
 
         hexagonFlaggedPixmap.dispose()
 
-        val hexagonFakeFileHandle = Gdx.files.internal("res/cells/fake.png")
+        val hexagonFakeFileHandle = Gdx.files.internal("cells/fake.png")
         val hexagonFakePixmap = Pixmap(hexagonFakeFileHandle)
         hexagonFakeTexture = Texture(hexagonFakePixmap)
 
