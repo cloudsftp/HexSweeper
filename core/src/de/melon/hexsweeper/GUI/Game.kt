@@ -1,4 +1,4 @@
-package de.melon.hexsweeper
+package de.melon.hexsweeper.GUI
 
 import de.melon.hexsweeper.logic.*
 import com.badlogic.gdx.ApplicationListener
