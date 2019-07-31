@@ -48,7 +48,3 @@ class Cell(val bomb: Boolean, var state: CellState = CellState.closed) {
     }
 
 }
-
-enum class CellState {
-    closed, opened, flagged, fake
-}

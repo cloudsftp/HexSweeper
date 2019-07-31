@@ -11,10 +11,6 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 
-enum class GameState {
-    running, end
-}
-
 class Game : ApplicationListener, InputProcessor {
 
     internal  lateinit var state: GameState
