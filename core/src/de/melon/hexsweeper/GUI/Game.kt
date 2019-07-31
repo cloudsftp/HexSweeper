@@ -164,6 +164,8 @@ class Game : ApplicationListener, InputProcessor {
 
                     }
 
+            if (checkFinished()) state = GameState.end
+
         } else {
             reset()
 
