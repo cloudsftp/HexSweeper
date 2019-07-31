@@ -171,9 +171,20 @@ class Game : ApplicationListener, InputProcessor {
 
         }
 
-        drawField()
-
         return true
+
+    }
+
+    fun checkFinished(): Boolean {
+        var finished = true
+
+        for (row in field)
+            for (cell in row)
+                finished = finished
+                    && ((cell.bomb && cell.state == CellState.flagged)
+                        || (!cell.bomb && cell.state == CellState.opened))
+
+        return finished
 
     }
 
