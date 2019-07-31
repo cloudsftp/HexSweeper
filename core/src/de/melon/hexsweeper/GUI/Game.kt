@@ -11,7 +11,13 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 
+enum class GameState {
+    running, end
+}
+
 class Game : ApplicationListener, InputProcessor {
+
+    internal  lateinit var state: GameState
 
     internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
 
@@ -19,10 +25,13 @@ class Game : ApplicationListener, InputProcessor {
     internal lateinit var hexagonOpenedTextures: Array<Texture>
     internal lateinit var hexagonClosedTexture: Texture
     internal lateinit var hexagonFlaggedTexture: Texture
+    internal lateinit var hexagonBombTexture: Texture
     internal lateinit var hexagonFakeTexture: Texture
 
     override fun create() {
         reset()
+
+        state = GameState.running
 
         batch = SpriteBatch()
 
@@ -50,6 +59,12 @@ class Game : ApplicationListener, InputProcessor {
         hexagonFlaggedTexture = Texture(hexagonFlaggedPixmap)
 
         hexagonFlaggedPixmap.dispose()
+
+        val hexagonBombFileHandle = Gdx.files.internal("cells/flagged.png")
+        val hexagonBombPixMap = Pixmap(hexagonBombFileHandle)
+        hexagonBombTexture = Texture(hexagonBombPixMap)
+
+        hexagonBombPixMap.dispose()
 
         val hexagonFakeFileHandle = Gdx.files.internal("cells/fake.png")
         val hexagonFakePixmap = Pixmap(hexagonFakeFileHandle)
@@ -85,7 +100,7 @@ class Game : ApplicationListener, InputProcessor {
 
     private fun drawField() {
         fun selectTexture(cell: Cell) = when(cell.state) {
-            CellState.closed -> hexagonClosedTexture
+            CellState.closed -> if (cell.bomb && state == GameState.end) hexagonBombTexture else hexagonClosedTexture
             CellState.flagged -> hexagonFlaggedTexture
             CellState.fake -> hexagonFakeTexture
             CellState.opened -> hexagonOpenedTextures[cell.numOfBombs]
@@ -133,24 +148,32 @@ class Game : ApplicationListener, InputProcessor {
             = x > sprite.x && x < sprite.x + sprite.width
                 && y > sprite.y && y < sprite.y + sprite.height
 
-        for (row in hexagonSprites)
-            for (sprite in row)
-                if (clickInSprite(sprite, p0, p1)) {
-                    val i = hexagonSprites.size - hexagonSprites.indexOf(row) - 1
-                    val j = row.indexOf(sprite)
+        if (state == GameState.running) {
+            for (row in hexagonSprites)
+                for (sprite in row)
+                    if (clickInSprite(sprite, p0, p1)) {
+                        val i = hexagonSprites.size - hexagonSprites.indexOf(row) - 1
+                        val j = row.indexOf(sprite)
 
-                    println("$i, $j")
+                        println("$i, $j")
 
-                    if (p3 == 0) {
-                        if (!field.open(i, j))
-                            reset()
+                        if (p3 == 0) {
+                            if (!field.open(i, j))
+                                state = GameState.end
 
-                    } else {
-                        field.toggleFlag(i, j)
+                        } else {
+                            field.toggleFlag(i, j)
+
+                        }
 
                     }
 
-                }
+        } else {
+            reset()
+
+            state = GameState.running
+
+        }
 
         drawField()
 
