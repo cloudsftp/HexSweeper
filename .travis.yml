@@ -3,11 +3,4 @@ language: java
 install: true
 before_install: chmod +x gradlew
 
-sudo: true
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
-
-
 script: ./gradlew build
