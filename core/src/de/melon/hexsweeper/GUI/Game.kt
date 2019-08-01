@@ -1,17 +1,16 @@
-package de.melon.hexsweeper
+package de.melon.hexsweeper.GUI
 
 import de.melon.hexsweeper.logic.*
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.Pixmap
-import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 
 class Game : ApplicationListener, InputProcessor {
+
+    internal  lateinit var state: GameState
 
     internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
 
@@ -19,10 +18,16 @@ class Game : ApplicationListener, InputProcessor {
     internal lateinit var hexagonOpenedTextures: Array<Texture>
     internal lateinit var hexagonClosedTexture: Texture
     internal lateinit var hexagonFlaggedTexture: Texture
+    internal lateinit var hexagonBombTexture: Texture
     internal lateinit var hexagonFakeTexture: Texture
+
+    internal val numOfRendersPerChange = 2
+    internal var render = numOfRendersPerChange
 
     override fun create() {
         reset()
+
+        state = GameState.running
 
         batch = SpriteBatch()
 
@@ -51,6 +56,12 @@ class Game : ApplicationListener, InputProcessor {
 
         hexagonFlaggedPixmap.dispose()
 
+        val hexagonBombFileHandle = Gdx.files.internal("cells/flagged.png")
+        val hexagonBombPixMap = Pixmap(hexagonBombFileHandle)
+        hexagonBombTexture = Texture(hexagonBombPixMap)
+
+        hexagonBombPixMap.dispose()
+
         val hexagonFakeFileHandle = Gdx.files.internal("cells/fake.png")
         val hexagonFakePixmap = Pixmap(hexagonFakeFileHandle)
         hexagonFakeTexture = Texture(hexagonFakePixmap)
@@ -62,11 +73,16 @@ class Game : ApplicationListener, InputProcessor {
     }
 
     override fun render() {
-        Gdx.gl.glClearColor(1f, 1f, 1f, 1f)
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+        if (render > 0) {
+            Gdx.gl.glClearColor(1f, 1f, 1f, 1f)
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-        drawBackground()
-        drawField()
+            drawBackground()
+            drawField()
+
+            render--
+
+        }
 
     }
 
@@ -85,7 +101,7 @@ class Game : ApplicationListener, InputProcessor {
 
     private fun drawField() {
         fun selectTexture(cell: Cell) = when(cell.state) {
-            CellState.closed -> hexagonClosedTexture
+            CellState.closed -> if (cell.bomb && state == GameState.end) hexagonBombTexture else hexagonClosedTexture
             CellState.flagged -> hexagonFlaggedTexture
             CellState.fake -> hexagonFakeTexture
             CellState.opened -> hexagonOpenedTextures[cell.numOfBombs]
@@ -127,34 +143,57 @@ class Game : ApplicationListener, InputProcessor {
     }
 
     override fun touchDown(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
+        render = numOfRendersPerChange
+
         println("Click at $p0, $p1, $p2, $p3")
 
         fun clickInSprite(sprite: Sprite, x: Int, y: Int)
             = x > sprite.x && x < sprite.x + sprite.width
                 && y > sprite.y && y < sprite.y + sprite.height
 
-        for (row in hexagonSprites)
-            for (sprite in row)
-                if (clickInSprite(sprite, p0, p1)) {
-                    val i = hexagonSprites.size - hexagonSprites.indexOf(row) - 1
-                    val j = row.indexOf(sprite)
+        if (state == GameState.running) {
+            for (row in hexagonSprites)
+                for (sprite in row)
+                    if (clickInSprite(sprite, p0, p1)) {
+                        val i = hexagonSprites.size - hexagonSprites.indexOf(row) - 1
+                        val j = row.indexOf(sprite)
 
-                    println("$i, $j")
+                        println("$i, $j")
 
-                    if (p3 == 0) {
-                        if (!field.open(i, j))
-                            reset()
+                        if (p3 == 0) {
+                            if (!field.open(i, j))
+                                state = GameState.end
 
-                    } else {
-                        field.toggleFlag(i, j)
+                        } else {
+                            field.toggleFlag(i, j)
+
+                        }
 
                     }
 
-                }
+            if (checkFinished()) state = GameState.end
 
-        drawField()
+        } else {
+            reset()
+
+            state = GameState.running
+
+        }
 
         return true
+
+    }
+
+    fun checkFinished(): Boolean {
+        var finished = true
+
+        for (row in field)
+            for (cell in row)
+                finished = finished
+                    && ((cell.bomb && cell.state == CellState.flagged)
+                        || (!cell.bomb && cell.state == CellState.opened))
+
+        return finished
 
     }
 
