@@ -39,6 +39,9 @@ Hooks and Filters directory can be default
 
 ##### Usage
 
-- start feature branch: `git flow feature start [name]`
-- end feature branch: `git flow feature finish [name]`
-- the same for bugfixes etc. `git flow [type] [start/finish] [name]`
+- Features:
+  - start feature branch: `git flow feature start [name]`
+  - end feature branch: `git flow feature finish [name]`
+- Releases:
+  - start release branch: `git flow release start HEX.[XX].[XX]`
+  - end release branch: `git flow release finish HEX.[XX].[XX]`
