@@ -1,6 +1,9 @@
 # HexSweeper
 ### Minesweeper gone Hexagonal
 
+Travis build of branch develop:
+![Build Status](https://travis-ci.org/cloudsftp/HexSweeper.svg?branch=develop)
+
 This Project uses **Gitflow** for version control
 and **Gradle** for dependencies and builds.
 
