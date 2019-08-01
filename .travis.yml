@@ -1,4 +1,4 @@
 language: java
 
-./gradlew assemble
-./gradlew build
+before_script: ./gradlew assemble
+script: ./gradlew build
