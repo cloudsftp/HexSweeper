@@ -26,11 +26,6 @@ class Game {
 
     fun processOpen(i: Int, j: Int) {
 
-
-
-    }
-
-    fun processFlag(i: Int, j: Int) {
         if (state == GameState.running) {
 
             if (!field.open(i, j)) state = GameState.end
@@ -45,9 +40,32 @@ class Game {
 
     }
 
-    fun checkForWin() {
+    fun processFlag(i: Int, j: Int) {
 
-        
+        if (state == GameState.running) {
+
+            field.toggleFlag(i, j)
+
+            checkForWin()
+
+        } else {
+
+            start(n, m)
+
+        }
+
+    }
+
+    fun checkForWin() {
+        var win = true
+
+        for (row in field)
+            for (cell in row)
+                win = win
+                        && ((cell.bomb && cell.state == CellState.flagged)
+                        || (!cell.bomb && cell.state == CellState.opened))
+
+        if (win) state = GameState.end
 
     }
 

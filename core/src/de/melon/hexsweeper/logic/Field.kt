@@ -39,6 +39,9 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
             return true
 
         } else {
+
+            explodeBombs()
+
             return false
 
         }
@@ -76,6 +79,15 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
         addIndicesSafe(i + 2, j)
 
         return list
+
+    }
+
+    fun explodeBombs() {
+
+        for (row in cells)
+            for (cell in row)
+                if (cell.bomb)
+                    cell.state = CellState.exploded
 
     }
 
