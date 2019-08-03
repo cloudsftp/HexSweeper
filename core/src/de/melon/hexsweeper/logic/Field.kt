@@ -93,6 +93,8 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
             for (cell in row)
                 if (cell.bomb)
                     cell.state = CellState.exploded
+                else if(cell.state == CellState.flagged)
+                    cell.state = CellState.closed
 
     }
 
