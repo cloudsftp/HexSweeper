@@ -55,7 +55,7 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
         hexagonFlaggedPixmap.dispose()
 
-        val hexagonBombFileHandle = Gdx.files.internal("cells/flagged.png")
+        val hexagonBombFileHandle = Gdx.files.internal("cells/bomb.png")
         val hexagonBombPixMap = Pixmap(hexagonBombFileHandle)
         hexagonBombTexture = Texture(hexagonBombPixMap)
 
