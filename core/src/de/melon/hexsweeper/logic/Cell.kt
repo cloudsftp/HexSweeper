@@ -7,27 +7,18 @@ class Cell(val bomb: Boolean, var state: CellState = CellState.closed) {
     var numOfBombs: Int = 0
 
     fun open(): Boolean {
-        if (state != CellState.closed) {
-            println("Cannot open Cell")
+        println("Opening Cell")
 
+        if (bomb) {
+            println("Game Over!")
+            state = CellState.exploded
             return false
-
-        } else {
-            println("Opening Cell")
-
-            if (bomb) {
-                println("Game Over!")
-                state = CellState.exploded
-                return false
-
-            }
-
-            state = CellState.opened
-
-            return true
 
         }
 
+        state = CellState.opened
+
+        return true
     }
 
     fun toggleFlag() {

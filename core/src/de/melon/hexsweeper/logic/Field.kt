@@ -31,19 +31,24 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
 
 
     fun open(i: Int, j: Int): Boolean {
-        if (cells[i][j].open()) {
-            if (cells[i][j].numOfBombs == 0)
-                for ((I, J) in getAdjacentIndices(i, j))
-                    open(I, J)
 
-            return true
+        if(cells[i][j].state == CellState.closed) {
+            if (cells[i][j].open()) {
+                if (cells[i][j].numOfBombs == 0)
+                    for ((I, J) in getAdjacentIndices(i, j))
+                        open(I, J)
 
+                return true
+
+            } else {
+
+                explodeBombs()
+
+                return false
+
+            }
         } else {
-
-            explodeBombs()
-
-            return false
-
+            return true
         }
 
     }
