@@ -31,16 +31,24 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
 
 
     fun open(i: Int, j: Int): Boolean {
-        if (cells[i][j].open()) {
-            if (cells[i][j].numOfBombs == 0)
-                for ((I, J) in getAdjacentIndices(i, j))
-                    open(I, J)
 
-            return true
+        if(cells[i][j].state == CellState.closed) {
+            if (cells[i][j].open()) {
+                if (cells[i][j].numOfBombs == 0)
+                    for ((I, J) in getAdjacentIndices(i, j))
+                        open(I, J)
 
+                return true
+
+            } else {
+
+                explodeBombs()
+
+                return false
+
+            }
         } else {
-            return false
-
+            return true
         }
 
     }
@@ -76,6 +84,17 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
         addIndicesSafe(i + 2, j)
 
         return list
+
+    }
+
+    fun explodeBombs() {
+
+        for (row in cells)
+            for (cell in row)
+                if (cell.bomb)
+                    cell.state = CellState.exploded
+                else if(cell.state == CellState.flagged)
+                    cell.state = CellState.closed
 
     }
 

@@ -2,7 +2,7 @@ package de.melon.hexsweeper.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import de.melon.hexsweeper.GUI.Game;
+import de.melon.hexsweeper.GUI.GameRenderer;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
@@ -12,6 +12,6 @@ public class DesktopLauncher {
 		config.height = 700;
 		config.width = 1000;
 
-		new LwjglApplication(new Game(), config);
+		new LwjglApplication(new GameRenderer(), config);
 	}
 }
