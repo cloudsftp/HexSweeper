@@ -31,7 +31,7 @@ class GameRenderer : ApplicationListener, InputProcessor {
     internal lateinit var hexagonFakeTexture: Texture
 
     internal val numOfRendersPerChange = 2
-    internal var render = numOfRendersPerChange
+    internal var render = 0
     lateinit var bitmapFont: BitmapFont
 
     override fun create() {
@@ -84,7 +84,7 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
     override fun render() {
 
-        if (render > 0) {
+        if (render < numOfRendersPerChange) {
             Gdx.gl.glClearColor(1f, 1f, 1f, 1f)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
@@ -97,14 +97,13 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
             batch.end()
 
-            render--
+            render++
 
         }
 
     }
 
     private fun drawBackground() {
-
         val pixmap = Pixmap(Gdx.graphics.width, Gdx.graphics.height, Pixmap.Format.RGB565)
         pixmap.setColor(Color.DARK_GRAY)
         pixmap.fill()
@@ -199,22 +198,13 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
                 }
 
+        startRender()
+
         return true
 
     }
 
-    fun checkFinished(): Boolean {
-        var finished = true
-
-        for (row in game.field)
-            for (cell in row)
-                finished = finished
-                        && ((cell.bomb && cell.state == CellState.flagged)
-                        || (!cell.bomb && cell.state == CellState.opened))
-
-        return finished
-
-    }
+    fun startRender() { render = 0 }
 
 
     // useless
