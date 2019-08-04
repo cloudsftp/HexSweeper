@@ -41,42 +41,24 @@ class GameRenderer : ApplicationListener, InputProcessor {
         batch = SpriteBatch()
         bitmapFont = BitmapFont()
 
-        val hexagonOpenedTexturesList = mutableListOf<Texture>()
-        for (i in 0..6) {
-            val hexagonFileHandle = Gdx.files.internal("cells/opened_$i.png")
+        fun generateHexagonTexture(name: String): Texture {
+
+            val hexagonFileHandle = Gdx.files.internal("cells/$name")
             val hexagonPixmap = Pixmap(hexagonFileHandle)
             val hexagonTexture = Texture(hexagonPixmap)
-            hexagonOpenedTexturesList.add(hexagonTexture)
 
             hexagonPixmap.dispose()
 
+            return hexagonTexture
+
         }
 
-        hexagonOpenedTextures = hexagonOpenedTexturesList.toTypedArray()
+        hexagonOpenedTextures = Array<Texture>(7) { i -> generateHexagonTexture("opened_$i.png") }
 
-        val hexagonClosedFileHandle = Gdx.files.internal("cells/closed.png")
-        val hexagonClosedPixmap = Pixmap(hexagonClosedFileHandle)
-        hexagonClosedTexture = Texture(hexagonClosedPixmap)
-
-        hexagonClosedPixmap.dispose()
-
-        val hexagonFlaggedFileHandle = Gdx.files.internal("cells/flagged.png")
-        val hexagonFlaggedPixmap = Pixmap(hexagonFlaggedFileHandle)
-        hexagonFlaggedTexture = Texture(hexagonFlaggedPixmap)
-
-        hexagonFlaggedPixmap.dispose()
-
-        val hexagonBombFileHandle = Gdx.files.internal("cells/bomb.png")
-        val hexagonBombPixMap = Pixmap(hexagonBombFileHandle)
-        hexagonBombTexture = Texture(hexagonBombPixMap)
-
-        hexagonBombPixMap.dispose()
-
-        val hexagonFakeFileHandle = Gdx.files.internal("cells/fake.png")
-        val hexagonFakePixmap = Pixmap(hexagonFakeFileHandle)
-        hexagonFakeTexture = Texture(hexagonFakePixmap)
-
-        hexagonFakePixmap.dispose()
+        hexagonClosedTexture = generateHexagonTexture("closed.png")
+        hexagonFlaggedTexture = generateHexagonTexture("flagged.png")
+        hexagonBombTexture = generateHexagonTexture("bomb.png")
+        hexagonFakeTexture = generateHexagonTexture("fake.png")
 
         val windowWidth = Gdx.graphics.width.toFloat()
         val windowHeight = Gdx.graphics.height.toFloat()
