@@ -108,7 +108,7 @@ class GameRenderer : ApplicationListener, InputProcessor {
         val pixmap = Pixmap(Gdx.graphics.width, Gdx.graphics.height, Pixmap.Format.RGB565)
         pixmap.setColor(Color.DARK_GRAY)
         pixmap.fill()
-        batch.draw(Texture(pixmap), 0f, 0f)
+        batch.draw(Texture(pixmap), - (Gdx.graphics.width / 2).toFloat(), - (Gdx.graphics.height / 2).toFloat())
 
 
     }
@@ -138,7 +138,8 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
             for (j in 0 until game.field.cells[i].size) {
                 val hexagonSprite = Sprite(selectTexture(game.field.cells[i][j]))
-                hexagonSprite.setPosition(j * 153f + offsetX, i * 45f + offsetY)
+                hexagonSprite.setPosition(j * 153f + offsetX - Gdx.graphics.width / 2,
+                        i * 45f + offsetY - Gdx.graphics.height / 2)
                 hexagonSprite.draw(batch)
 
                 hexagonSprites[i].add(hexagonSprite)
