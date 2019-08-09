@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.math.Vector2
 import de.melon.hexsweeper.logic.Cell
 import de.melon.hexsweeper.logic.CellState
 import de.melon.hexsweeper.logic.Game
@@ -22,6 +23,7 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
     internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
 
+    internal lateinit var center: Vector2
     internal lateinit var camera: OrthographicCamera
     internal lateinit var batch: SpriteBatch
     internal lateinit var hexagonOpenedTextures: Array<Texture>
@@ -75,7 +77,8 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
         hexagonFakePixmap.dispose()
 
-        camera = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat());
+        camera = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+        center = Vector2((Gdx.graphics.width / 2).toFloat(), (Gdx.graphics.height / 2).toFloat())
 
         Gdx.input.inputProcessor = this
 
@@ -107,8 +110,7 @@ class GameRenderer : ApplicationListener, InputProcessor {
         val pixmap = Pixmap(Gdx.graphics.width, Gdx.graphics.height, Pixmap.Format.RGB565)
         pixmap.setColor(Color.DARK_GRAY)
         pixmap.fill()
-        batch.draw(Texture(pixmap), - (Gdx.graphics.width / 2).toFloat(), - (Gdx.graphics.height / 2).toFloat())
-
+        batch.draw(Texture(pixmap), -center.x, -center.y)
 
     }
 
@@ -176,13 +178,19 @@ class GameRenderer : ApplicationListener, InputProcessor {
     override fun touchDown(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
         render = numOfRendersPerChange
 
-        fun clickInSprite(sprite: Sprite, x: Int, y: Int)
+        println("Click at $p0, $p1, $p2, $p3")
+        val mouseLoc = Vector2(p0.toFloat(), p1.toFloat())
+        val direction = mouseLoc.sub(center)
+
+        println("Vector: $direction")
+
+        fun clickInSprite(sprite: Sprite, x: Float, y: Float)
                 = x > sprite.x && x < sprite.x + sprite.width
                 && y > sprite.y && y < sprite.y + sprite.height
 
         for (row in hexagonSprites)
             for (sprite in row)
-                if (clickInSprite(sprite, p0, p1)) {
+                if (clickInSprite(sprite, direction.x, direction.y)) {
                     val i = hexagonSprites.size - hexagonSprites.indexOf(row) - 1
                     val j = row.indexOf(sprite)
 
