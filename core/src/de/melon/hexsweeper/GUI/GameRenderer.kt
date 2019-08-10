@@ -161,7 +161,7 @@ class GameRenderer : ApplicationListener, InputProcessor {
         }
 
         log.forEachIndexed { index, str ->
-            bitmapFont.draw(batch, str, 10f, Gdx.graphics.height - 16f - index * 16f)
+            bitmapFont.draw(batch, str, 10f - center.x, center.y - (index + 1) * 16f)
         }
     }
 
