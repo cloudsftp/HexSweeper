@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.math.Vector3
 import de.melon.hexsweeper.logic.Cell
 import de.melon.hexsweeper.logic.CellState
 import de.melon.hexsweeper.logic.Game
@@ -77,8 +78,14 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
         hexagonFakePixmap.dispose()
 
-        camera = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
-        center = Vector2((Gdx.graphics.width / 2).toFloat(), (Gdx.graphics.height / 2).toFloat())
+        val windowWidth = Gdx.graphics.width.toFloat()
+        val windowHeight = Gdx.graphics.height.toFloat()
+        camera = OrthographicCamera(windowWidth, windowHeight)
+        center = Vector2(windowWidth / 2, windowHeight / 2)
+
+        camera.position.set(center, 0f)
+        camera.zoom = 2f
+        camera.update()
 
         Gdx.input.inputProcessor = this
 
@@ -139,8 +146,7 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
             for (j in 0 until game.field.cells[i].size) {
                 val hexagonSprite = Sprite(selectTexture(game.field.cells[i][j]))
-                hexagonSprite.setPosition(j * 153f + offsetX - Gdx.graphics.width / 2,
-                        i * 45f + offsetY - Gdx.graphics.height / 2)
+                hexagonSprite.setPosition(j * 153f + offsetX, i * 45f + offsetY)
                 hexagonSprite.draw(batch)
 
                 hexagonSprites[i].add(hexagonSprite)
@@ -161,7 +167,7 @@ class GameRenderer : ApplicationListener, InputProcessor {
         }
 
         log.forEachIndexed { index, str ->
-            bitmapFont.draw(batch, str, 10f - center.x, center.y - (index + 1) * 16f)
+            bitmapFont.draw(batch, str, 10f, (index + 1) * 16f)
         }
     }
 
