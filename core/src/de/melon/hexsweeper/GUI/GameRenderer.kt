@@ -37,12 +37,17 @@ class GameRenderer : ApplicationListener, InputProcessor {
     internal var render = 0
     lateinit var bitmapFont: BitmapFont
 
+    internal var fieldWidth = 2000
+    internal var fieldHeight = 1000
+
+    internal var windowWidth = 0f
+    internal var windowHeight = 0f
+
     override fun create() {
         batch = SpriteBatch()
         bitmapFont = BitmapFont()
 
         fun generateHexagonTexture(name: String): Texture {
-
             val hexagonFileHandle = Gdx.files.internal("cells/$name")
             val hexagonPixmap = Pixmap(hexagonFileHandle)
             val hexagonTexture = Texture(hexagonPixmap)
@@ -60,13 +65,13 @@ class GameRenderer : ApplicationListener, InputProcessor {
         hexagonBombTexture = generateHexagonTexture("bomb.png")
         hexagonFakeTexture = generateHexagonTexture("fake.png")
 
-        val windowWidth = Gdx.graphics.width.toFloat()
-        val windowHeight = Gdx.graphics.height.toFloat()
+        windowWidth = Gdx.graphics.width.toFloat()
+        windowHeight = Gdx.graphics.height.toFloat()
         camera = OrthographicCamera(windowWidth, windowHeight)
-        center = Vector2(windowWidth / 2, windowHeight / 2)
+        center = Vector2(fieldWidth / 2f, fieldHeight / 2f)
 
         camera.position.set(center, 0f)
-        camera.zoom = 2f
+        camera.zoom = 3f
         camera.update()
 
         Gdx.input.inputProcessor = this
@@ -75,7 +80,6 @@ class GameRenderer : ApplicationListener, InputProcessor {
     }
 
     override fun render() {
-
         if (render < numOfRendersPerChange) {
             Gdx.gl.glClearColor(1f, 1f, 1f, 1f)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
@@ -96,10 +100,10 @@ class GameRenderer : ApplicationListener, InputProcessor {
     }
 
     private fun drawBackground() {
-        val pixmap = Pixmap(Gdx.graphics.width, Gdx.graphics.height, Pixmap.Format.RGB565)
+        val pixmap = Pixmap(fieldWidth, fieldHeight, Pixmap.Format.RGB565)
         pixmap.setColor(Color.DARK_GRAY)
         pixmap.fill()
-        batch.draw(Texture(pixmap), -center.x, -center.y)
+        batch.draw(Texture(pixmap), 0f, 0f)
 
     }
 
@@ -113,7 +117,6 @@ class GameRenderer : ApplicationListener, InputProcessor {
             CellState.opened -> hexagonOpenedTextures[cell.numOfBombs]
 
         }
-
 
         var offsetX: Int
         val offsetY = 30
@@ -136,7 +139,6 @@ class GameRenderer : ApplicationListener, InputProcessor {
             }
 
         }
-
 
     }
 
@@ -170,7 +172,7 @@ class GameRenderer : ApplicationListener, InputProcessor {
         val mouseLoc = Vector2(p0.toFloat(), p1.toFloat())
         val direction = mouseLoc.sub(center)
 
-        println("Vector: $direction")
+        val invertedProjectionMatrix = camera.combined.inv()
 
         fun clickInSprite(sprite: Sprite, x: Float, y: Float)
                 = x > sprite.x && x < sprite.x + sprite.width
