@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.math.Vector3
 import de.melon.hexsweeper.logic.Cell
 import de.melon.hexsweeper.logic.CellState
 import de.melon.hexsweeper.logic.Game
@@ -27,11 +26,12 @@ class GameRenderer : ApplicationListener, InputProcessor {
     internal lateinit var center: Vector2
     internal lateinit var camera: OrthographicCamera
     internal lateinit var batch: SpriteBatch
-    internal lateinit var hexagonOpenedTextures: Array<Texture>
+    internal lateinit var backgroundTexture: Texture
     internal lateinit var hexagonClosedTexture: Texture
     internal lateinit var hexagonFlaggedTexture: Texture
     internal lateinit var hexagonBombTexture: Texture
     internal lateinit var hexagonFakeTexture: Texture
+    internal lateinit var hexagonOpenedTextures: Array<Texture>
 
     internal val numOfRendersPerChange = 2
     internal var render = 0
@@ -46,6 +46,8 @@ class GameRenderer : ApplicationListener, InputProcessor {
     override fun create() {
         batch = SpriteBatch()
         bitmapFont = BitmapFont()
+
+        // import Textures
 
         fun generateHexagonTexture(name: String): Texture {
             val hexagonFileHandle = Gdx.files.internal("cells/$name")
@@ -65,13 +67,24 @@ class GameRenderer : ApplicationListener, InputProcessor {
         hexagonBombTexture = generateHexagonTexture("bomb.png")
         hexagonFakeTexture = generateHexagonTexture("fake.png")
 
+        // game field
+
+        val backgroundPixmap = Pixmap(500, 500, Pixmap.Format.RGB565);
+        backgroundPixmap.setColor(Color.DARK_GRAY)
+        backgroundPixmap.fill()
+        backgroundTexture = Texture(backgroundPixmap)
+
+        backgroundPixmap.dispose()
+
+        // camera
+
         windowWidth = Gdx.graphics.width.toFloat()
         windowHeight = Gdx.graphics.height.toFloat()
         camera = OrthographicCamera(windowWidth, windowHeight)
         center = Vector2(fieldWidth / 2f, fieldHeight / 2f)
 
         camera.position.set(center, 0f)
-        camera.zoom = 3f
+        camera.zoom = 2f
         camera.update()
 
         Gdx.input.inputProcessor = this
@@ -87,7 +100,6 @@ class GameRenderer : ApplicationListener, InputProcessor {
             batch.projectionMatrix = camera.combined
             batch.begin()
 
-            drawBackground()
             drawField()
             drawLog()
 
@@ -96,14 +108,6 @@ class GameRenderer : ApplicationListener, InputProcessor {
             render++
 
         }
-
-    }
-
-    private fun drawBackground() {
-        val pixmap = Pixmap(fieldWidth, fieldHeight, Pixmap.Format.RGB565)
-        pixmap.setColor(Color.DARK_GRAY)
-        pixmap.fill()
-        batch.draw(Texture(pixmap), 0f, 0f)
 
     }
 
@@ -117,6 +121,9 @@ class GameRenderer : ApplicationListener, InputProcessor {
             CellState.opened -> hexagonOpenedTextures[cell.numOfBombs]
 
         }
+
+        Sprite(backgroundTexture).draw(batch)
+
 
         var offsetX: Int
         val offsetY = 30
@@ -253,4 +260,3 @@ class GameRenderer : ApplicationListener, InputProcessor {
 fun log(s: String){
     INSTANCE?.log(s)
 }
-
