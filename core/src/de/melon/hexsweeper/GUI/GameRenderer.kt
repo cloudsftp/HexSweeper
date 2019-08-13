@@ -17,16 +17,22 @@ var INSTANCE: GameRenderer? = null
 
 class GameRenderer : ApplicationListener, InputProcessor {
 
-    val n = 13
-    val m = 6
+    constructor(scaling: Float) {
+        this.scaling = scaling
 
-    val game = Game(n , m)
+    }
 
     internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
 
     internal lateinit var center: Vector2
     internal lateinit var camera: OrthographicCamera
     internal lateinit var batch: SpriteBatch
+
+    internal val offsetX = 50
+    internal val offsetXbonus = 77
+    internal val offsetY = 45
+    internal val cellSpacingX = 153f
+    internal val cellSpacingY = 45f
     internal lateinit var backgroundTexture: Texture
     internal lateinit var hexagonClosedTexture: Texture
     internal lateinit var hexagonFlaggedTexture: Texture
@@ -34,15 +40,13 @@ class GameRenderer : ApplicationListener, InputProcessor {
     internal lateinit var hexagonFakeTexture: Texture
     internal lateinit var hexagonOpenedTextures: Array<Texture>
 
+    internal lateinit var game: Game
+
     internal val numOfRendersPerChange = 2
     internal var render = 0
     lateinit var bitmapFont: BitmapFont
 
-    internal var fieldWidth = 2000
-    internal var fieldHeight = 1000
-
-    internal var windowWidth = 0f
-    internal var windowHeight = 0f
+    internal var scaling = 2f
 
     override fun create() {
         batch = SpriteBatch()
@@ -70,25 +74,33 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
         // game field
 
-        windowWidth = Gdx.graphics.width.toFloat()
-        windowHeight = Gdx.graphics.height.toFloat()
+        val windowWidth = Gdx.graphics.width.toFloat()
+        val windowHeight = Gdx.graphics.height.toFloat()
 
-        fieldWidth = (2 * windowWidth).toInt()
-        fieldHeight = (2 * windowHeight).toInt()
+        val fieldWidth = (scaling * windowWidth).toInt()
+        val fieldHeight = (scaling * windowHeight).toInt()
 
-        val backgroundPixmap = Pixmap(fieldWidth, fieldHeight, Pixmap.Format.RGB565);
+        val backgroundPixmap = Pixmap(fieldWidth, fieldHeight, Pixmap.Format.RGB565)
         backgroundPixmap.setColor(Color.DARK_GRAY)
         backgroundPixmap.fill()
         backgroundTexture = Texture(backgroundPixmap)
 
         backgroundPixmap.dispose()
 
+        var n = 0
+        var m = 0
+
+        while (n * cellSpacingY + offsetY + 100 < fieldHeight) n++
+        while (m * cellSpacingX + offsetX + 100 < fieldWidth) m++
+
+        game = Game(n, m)
+
         // camera
 
         camera = OrthographicCamera(windowWidth, windowHeight)
         center = Vector2(fieldWidth / 2f, fieldHeight / 2f)
         camera.position.set(center, 0f)
-        camera.zoom = 2f
+        camera.zoom = scaling
         camera.update()
 
         Gdx.input.inputProcessor = this
@@ -128,21 +140,19 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
         Sprite(backgroundTexture).draw(batch)
 
-
-        var offsetX: Int
-        val offsetY = 30
+        var offsetXcomp: Int
 
         hexagonSprites = mutableListOf()
 
         for (i in 0 until game.field.cells.size) {
             hexagonSprites.add(mutableListOf())
 
-            offsetX = 50
-            offsetX += if (i % 2 == 0) 77 else 0
+            offsetXcomp = offsetX
+            offsetXcomp += if (i % 2 == 0) offsetXbonus else 0
 
             for (j in 0 until game.field.cells[i].size) {
                 val hexagonSprite = Sprite(selectTexture(game.field.cells[i][j]))
-                hexagonSprite.setPosition(j * 153f + offsetX, i * 45f + offsetY)
+                hexagonSprite.setPosition(j * cellSpacingX + offsetXcomp, i * cellSpacingY + offsetY)
                 hexagonSprite.draw(batch)
 
                 hexagonSprites[i].add(hexagonSprite)
