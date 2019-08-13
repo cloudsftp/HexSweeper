@@ -41,6 +41,8 @@ class GameRenderer : ApplicationListener, InputProcessor {
     internal var render = 0
     lateinit var bitmapFont: BitmapFont
 
+    internal val scaling = 2f
+
     override fun create() {
         batch = SpriteBatch()
         bitmapFont = BitmapFont()
@@ -70,8 +72,8 @@ class GameRenderer : ApplicationListener, InputProcessor {
         val windowWidth = Gdx.graphics.width.toFloat()
         val windowHeight = Gdx.graphics.height.toFloat()
 
-        val fieldWidth = (2 * windowWidth).toInt()
-        val fieldHeight = (2 * windowHeight).toInt()
+        val fieldWidth = (scaling * windowWidth).toInt()
+        val fieldHeight = (scaling * windowHeight).toInt()
 
         val backgroundPixmap = Pixmap(fieldWidth, fieldHeight, Pixmap.Format.RGB565)
         backgroundPixmap.setColor(Color.DARK_GRAY)
@@ -93,7 +95,7 @@ class GameRenderer : ApplicationListener, InputProcessor {
         camera = OrthographicCamera(windowWidth, windowHeight)
         center = Vector2(fieldWidth / 2f, fieldHeight / 2f)
         camera.position.set(center, 0f)
-        camera.zoom = 2f
+        camera.zoom = scaling
         camera.update()
 
         Gdx.input.inputProcessor = this
