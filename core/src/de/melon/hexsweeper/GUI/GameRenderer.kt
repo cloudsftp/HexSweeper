@@ -21,6 +21,9 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
     internal lateinit var endScreenBatch: SpriteBatch
 
+    internal var windowWidth = 0f
+    internal var windowHeight = 0f
+
     internal val offsetX = 50
     internal val offsetXbonus = 77
     internal val offsetY = 45
@@ -83,8 +86,8 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     private fun setFieldAndCamera() {
         // field
-        val windowWidth = Gdx.graphics.width.toFloat()
-        val windowHeight = Gdx.graphics.height.toFloat()
+        windowWidth = Gdx.graphics.width.toFloat()
+        windowHeight = Gdx.graphics.height.toFloat()
 
         val fieldWidth = (scaling * windowWidth).toInt()
         val fieldHeight = (scaling * windowHeight).toInt()
@@ -176,6 +179,11 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
             if (game.state == GameState.win) texture = youWonTexture
 
             val sprite = Sprite(texture)
+
+            val endScreenOffsetX = (windowWidth - texture.width) / 2f
+            val endScreenOffsetY = (windowHeight - texture.height) / 2f
+
+            sprite.setPosition(endScreenOffsetX, endScreenOffsetY)
             sprite.draw(endScreenBatch)
 
             endScreenBatch.end()
