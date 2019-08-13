@@ -13,8 +13,6 @@ import de.melon.hexsweeper.logic.Cell
 import de.melon.hexsweeper.logic.CellState
 import de.melon.hexsweeper.logic.Game
 
-var INSTANCE: GameRenderer? = null
-
 class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProcessor {
 
     internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
@@ -108,7 +106,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         Gdx.input.inputProcessor = this
 
-        INSTANCE = this
     }
 
     override fun render() {
@@ -120,7 +117,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
             batch.begin()
 
             drawField()
-            drawLog()
 
             batch.end()
 
@@ -164,23 +160,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         }
 
-    }
-
-    private val log = mutableListOf<String>()
-    private fun drawLog(){
-        bitmapFont.color = Color.WHITE
-
-        if(log.size > 3){
-            log.removeAt(0)
-        }
-
-        log.forEachIndexed { index, str ->
-            bitmapFont.draw(batch, str, 10f, (index + 1) * 16f)
-        }
-    }
-
-    fun log(s: String){
-        log.add(s)
     }
 
 
@@ -273,8 +252,4 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         return false
     }
 
-}
-
-fun log(s: String){
-    INSTANCE?.log(s)
 }
