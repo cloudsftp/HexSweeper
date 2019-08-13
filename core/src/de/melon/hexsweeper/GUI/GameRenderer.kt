@@ -22,6 +22,12 @@ class GameRenderer : ApplicationListener, InputProcessor {
     internal lateinit var center: Vector2
     internal lateinit var camera: OrthographicCamera
     internal lateinit var batch: SpriteBatch
+
+    internal val offsetX = 50
+    internal val offsetXbonus = 77
+    internal val offsetY = 50
+    internal val cellSpacingX = 153f
+    internal val cellSpacingY = 45f
     internal lateinit var backgroundTexture: Texture
     internal lateinit var hexagonClosedTexture: Texture
     internal lateinit var hexagonFlaggedTexture: Texture
@@ -74,7 +80,10 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
         backgroundPixmap.dispose()
 
-        
+        var n = 3
+        var m = 2
+
+        game = Game(n, m)
 
         // camera
 
@@ -121,21 +130,19 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
         Sprite(backgroundTexture).draw(batch)
 
-
-        var offsetX: Int
-        val offsetY = 30
+        var offsetXcomp: Int
 
         hexagonSprites = mutableListOf()
 
         for (i in 0 until game.field.cells.size) {
             hexagonSprites.add(mutableListOf())
 
-            offsetX = 50
-            offsetX += if (i % 2 == 0) 77 else 0
+            offsetXcomp = offsetX
+            offsetXcomp += if (i % 2 == 0) offsetXbonus else 0
 
             for (j in 0 until game.field.cells[i].size) {
                 val hexagonSprite = Sprite(selectTexture(game.field.cells[i][j]))
-                hexagonSprite.setPosition(j * 153f + offsetX, i * 45f + offsetY)
+                hexagonSprite.setPosition(j * cellSpacingX + offsetXcomp, i * cellSpacingY + offsetY)
                 hexagonSprite.draw(batch)
 
                 hexagonSprites[i].add(hexagonSprite)
