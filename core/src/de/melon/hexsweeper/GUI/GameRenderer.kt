@@ -70,7 +70,13 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
         // game field
 
-        val backgroundPixmap = Pixmap(500, 500, Pixmap.Format.RGB565);
+        windowWidth = Gdx.graphics.width.toFloat()
+        windowHeight = Gdx.graphics.height.toFloat()
+
+        fieldWidth = (2 * windowWidth).toInt()
+        fieldHeight = (2 * windowHeight).toInt()
+
+        val backgroundPixmap = Pixmap(fieldWidth, fieldHeight, Pixmap.Format.RGB565);
         backgroundPixmap.setColor(Color.DARK_GRAY)
         backgroundPixmap.fill()
         backgroundTexture = Texture(backgroundPixmap)
@@ -79,11 +85,8 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
         // camera
 
-        windowWidth = Gdx.graphics.width.toFloat()
-        windowHeight = Gdx.graphics.height.toFloat()
         camera = OrthographicCamera(windowWidth, windowHeight)
         center = Vector2(fieldWidth / 2f, fieldHeight / 2f)
-
         camera.position.set(center, 0f)
         camera.zoom = 2f
         camera.update()
