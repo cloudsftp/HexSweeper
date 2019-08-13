@@ -1,7 +1,5 @@
 package de.melon.hexsweeper.logic
 
-import de.melon.hexsweeper.GUI.log
-
 class Game {
 
     var n = 0
@@ -31,8 +29,8 @@ class Game {
         if (state == GameState.running) {
 
             if (!field.open(i, j)) {
-                state = GameState.end
-                log("Game Over!")
+                state = GameState.loose
+
             }
 
             checkForWin()
@@ -40,7 +38,6 @@ class Game {
         } else {
 
             start(n, m)
-            log("Started a new game ($n x $m)!")
 
         }
 
@@ -72,8 +69,7 @@ class Game {
                         || (!cell.bomb && cell.state == CellState.opened))
 
         if (win) {
-            state = GameState.end
-            log("You Win!")
+            state = GameState.win
         }
 
     }

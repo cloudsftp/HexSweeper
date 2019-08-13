@@ -12,28 +12,33 @@ import com.badlogic.gdx.math.Vector3
 import de.melon.hexsweeper.logic.Cell
 import de.melon.hexsweeper.logic.CellState
 import de.melon.hexsweeper.logic.Game
-
-var INSTANCE: GameRenderer? = null
+import de.melon.hexsweeper.logic.GameState
 
 class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProcessor {
 
-    internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
-
-    internal lateinit var center: Vector2
     internal lateinit var camera: OrthographicCamera
-    internal lateinit var batch: SpriteBatch
+    internal lateinit var fieldBatch: SpriteBatch
+    internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
+    internal lateinit var endScreenBatch: SpriteBatch
+
+    internal var windowWidth = 0f
+    internal var windowHeight = 0f
 
     internal val offsetX = 50
     internal val offsetXbonus = 77
     internal val offsetY = 45
     internal val cellSpacingX = 153f
     internal val cellSpacingY = 45f
+
     internal lateinit var backgroundTexture: Texture
     internal lateinit var hexagonClosedTexture: Texture
     internal lateinit var hexagonFlaggedTexture: Texture
     internal lateinit var hexagonBombTexture: Texture
     internal lateinit var hexagonFakeTexture: Texture
     internal lateinit var hexagonOpenedTextures: Array<Texture>
+
+    internal lateinit var gameOverTexture: Texture
+    internal lateinit var youWonTexture: Texture
 
     internal lateinit var game: Game
 
@@ -42,13 +47,19 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     lateinit var bitmapFont: BitmapFont
 
     override fun create() {
-        batch = SpriteBatch()
-        bitmapFont = BitmapFont()
+        fieldBatch = SpriteBatch()
+        endScreenBatch = SpriteBatch()
 
-        // import Textures
+        importTextures()
+        setFieldAndCamera()
 
-        fun generateHexagonTexture(name: String): Texture {
-            val hexagonFileHandle = Gdx.files.internal("cells/$name")
+        Gdx.input.inputProcessor = this
+
+    }
+
+    private fun importTextures() {
+        fun generateTexture(name: String): Texture {
+            val hexagonFileHandle = Gdx.files.internal(name)
             val hexagonPixmap = Pixmap(hexagonFileHandle)
             val hexagonTexture = Texture(hexagonPixmap)
 
@@ -58,6 +69,9 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         }
 
+        fun generateHexagonTexture(name: String) = generateTexture("cells/$name")
+        fun generateScreenTexture(name: String) = generateTexture("screens/$name")
+
         hexagonOpenedTextures = Array<Texture>(7) { i -> generateHexagonTexture("opened_$i.png") }
 
         hexagonClosedTexture = generateHexagonTexture("closed.png")
@@ -65,10 +79,15 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         hexagonBombTexture = generateHexagonTexture("bomb.png")
         hexagonFakeTexture = generateHexagonTexture("fake.png")
 
-        // game field
+        gameOverTexture = generateScreenTexture("gameover.png")
+        youWonTexture = generateScreenTexture("youwon.png")
 
-        val windowWidth = Gdx.graphics.width.toFloat()
-        val windowHeight = Gdx.graphics.height.toFloat()
+    }
+
+    private fun setFieldAndCamera() {
+        // field
+        windowWidth = Gdx.graphics.width.toFloat()
+        windowHeight = Gdx.graphics.height.toFloat()
 
         val fieldWidth = (scaling * windowWidth).toInt()
         val fieldHeight = (scaling * windowHeight).toInt()
@@ -89,16 +108,12 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         game = Game(n, m)
 
         // camera
-
         camera = OrthographicCamera(windowWidth, windowHeight)
-        center = Vector2(fieldWidth / 2f, fieldHeight / 2f)
+        val center = Vector2(fieldWidth / 2f, fieldHeight / 2f)
         camera.position.set(center, 0f)
         camera.zoom = scaling
         camera.update()
 
-        Gdx.input.inputProcessor = this
-
-        INSTANCE = this
     }
 
     override fun render() {
@@ -106,13 +121,8 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
             Gdx.gl.glClearColor(1f, 1f, 1f, 1f)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-            batch.projectionMatrix = camera.combined
-            batch.begin()
-
             drawField()
-            drawLog()
-
-            batch.end()
+            drawEndScreen()
 
             render++
 
@@ -131,7 +141,10 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         }
 
-        Sprite(backgroundTexture).draw(batch)
+        fieldBatch.projectionMatrix = camera.combined
+        fieldBatch.begin()
+
+        Sprite(backgroundTexture).draw(fieldBatch)
 
         var offsetXcomp: Int
 
@@ -146,7 +159,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
             for (j in 0 until game.field.cells[i].size) {
                 val hexagonSprite = Sprite(selectTexture(game.field.cells[i][j]))
                 hexagonSprite.setPosition(j * cellSpacingX + offsetXcomp, i * cellSpacingY + offsetY)
-                hexagonSprite.draw(batch)
+                hexagonSprite.draw(fieldBatch)
 
                 hexagonSprites[i].add(hexagonSprite)
 
@@ -154,28 +167,34 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         }
 
+        fieldBatch.end()
+
     }
 
-    private val log = mutableListOf<String>()
-    private fun drawLog(){
-        bitmapFont.color = Color.WHITE
+    private fun drawEndScreen() {
+        if (game.state != GameState.running) {
+            endScreenBatch.begin()
 
-        if(log.size > 3){
-            log.removeAt(0)
+            var texture = gameOverTexture
+            if (game.state == GameState.win) texture = youWonTexture
+
+            val sprite = Sprite(texture)
+
+            val endScreenOffsetX = (windowWidth - texture.width) / 2f
+            val endScreenOffsetY = (windowHeight - texture.height) / 2f
+
+            sprite.setPosition(endScreenOffsetX, endScreenOffsetY)
+            sprite.draw(endScreenBatch)
+
+            endScreenBatch.end()
+
         }
 
-        log.forEachIndexed { index, str ->
-            bitmapFont.draw(batch, str, 10f, (index + 1) * 16f)
-        }
-    }
-
-    fun log(s: String){
-        log.add(s)
     }
 
 
     override fun dispose() {
-        batch.dispose()
+        fieldBatch.dispose()
 
     }
 
@@ -263,8 +282,4 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         return false
     }
 
-}
-
-fun log(s: String){
-    INSTANCE?.log(s)
 }
