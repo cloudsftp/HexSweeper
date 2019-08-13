@@ -25,7 +25,7 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
     internal val offsetX = 50
     internal val offsetXbonus = 77
-    internal val offsetY = 50
+    internal val offsetY = 45
     internal val cellSpacingX = 153f
     internal val cellSpacingY = 45f
     internal lateinit var backgroundTexture: Texture
@@ -80,8 +80,11 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
         backgroundPixmap.dispose()
 
-        var n = 3
-        var m = 2
+        var n = 0
+        var m = 0
+
+        while (n * cellSpacingY + offsetY + 100 < fieldHeight) n++
+        while (m * cellSpacingX + offsetX + 100 < fieldWidth) m++
 
         game = Game(n, m)
 
