@@ -39,6 +39,17 @@ allprojects {
     }
 }
 
+project(":core") {
+    apply plugin: "kotlin"
+
+
+    dependencies {
+        api "com.badlogicgames.gdx:gdx:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    }
+}
+
 project(":desktop") {
     apply plugin: "kotlin"
 
@@ -76,7 +87,6 @@ project(":android") {
         compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     }
 }
-*/
 
 project(":ios") {
     apply plugin: "kotlin"
@@ -93,14 +103,4 @@ project(":ios") {
         compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     }
 }
-
-project(":core") {
-    apply plugin: "kotlin"
-
-
-    dependencies {
-        api "com.badlogicgames.gdx:gdx:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    }
-}
+*/
