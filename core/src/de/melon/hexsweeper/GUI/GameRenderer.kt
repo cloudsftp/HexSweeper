@@ -28,12 +28,16 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     internal val offsetY = 45
     internal val cellSpacingX = 153f
     internal val cellSpacingY = 45f
+
     internal lateinit var backgroundTexture: Texture
     internal lateinit var hexagonClosedTexture: Texture
     internal lateinit var hexagonFlaggedTexture: Texture
     internal lateinit var hexagonBombTexture: Texture
     internal lateinit var hexagonFakeTexture: Texture
     internal lateinit var hexagonOpenedTextures: Array<Texture>
+
+    internal lateinit var gameOverTexture: Texture
+    internal lateinit var youWonTexture: Texture
 
     internal lateinit var game: Game
 
@@ -47,8 +51,8 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         // import Textures
 
-        fun generateHexagonTexture(name: String): Texture {
-            val hexagonFileHandle = Gdx.files.internal("cells/$name")
+        fun generateTexture(name: String): Texture {
+            val hexagonFileHandle = Gdx.files.internal(name)
             val hexagonPixmap = Pixmap(hexagonFileHandle)
             val hexagonTexture = Texture(hexagonPixmap)
 
@@ -58,12 +62,18 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         }
 
+        fun generateHexagonTexture(name: String) = generateTexture("cells/$name")
+        fun generateScreenTexture(name: String) = generateTexture("screens/$name")
+
         hexagonOpenedTextures = Array<Texture>(7) { i -> generateHexagonTexture("opened_$i.png") }
 
         hexagonClosedTexture = generateHexagonTexture("closed.png")
         hexagonFlaggedTexture = generateHexagonTexture("flagged.png")
         hexagonBombTexture = generateHexagonTexture("bomb.png")
         hexagonFakeTexture = generateHexagonTexture("fake.png")
+
+        gameOverTexture = generateScreenTexture("gameover.png")
+        youWonTexture = generateScreenTexture("youwon.png")
 
         // game field
 
