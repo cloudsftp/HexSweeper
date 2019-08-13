@@ -17,6 +17,11 @@ var INSTANCE: GameRenderer? = null
 
 class GameRenderer : ApplicationListener, InputProcessor {
 
+    constructor(scaling: Float) {
+        this.scaling = scaling
+
+    }
+
     internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
 
     internal lateinit var center: Vector2
@@ -41,7 +46,7 @@ class GameRenderer : ApplicationListener, InputProcessor {
     internal var render = 0
     lateinit var bitmapFont: BitmapFont
 
-    internal val scaling = 2f
+    internal var scaling = 2f
 
     override fun create() {
         batch = SpriteBatch()
