@@ -3,13 +3,12 @@ package de.melon.hexsweeper.GUI
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.Pixmap
-import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.math.Vector3
 import de.melon.hexsweeper.logic.Cell
 import de.melon.hexsweeper.logic.CellState
 import de.melon.hexsweeper.logic.Game
@@ -25,57 +24,72 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
     internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
 
+    internal lateinit var center: Vector2
+    internal lateinit var camera: OrthographicCamera
     internal lateinit var batch: SpriteBatch
-    internal lateinit var hexagonOpenedTextures: Array<Texture>
+    internal lateinit var backgroundTexture: Texture
     internal lateinit var hexagonClosedTexture: Texture
     internal lateinit var hexagonFlaggedTexture: Texture
     internal lateinit var hexagonBombTexture: Texture
     internal lateinit var hexagonFakeTexture: Texture
+    internal lateinit var hexagonOpenedTextures: Array<Texture>
 
     internal val numOfRendersPerChange = 2
-    internal var render = numOfRendersPerChange
+    internal var render = 0
     lateinit var bitmapFont: BitmapFont
+
+    internal var fieldWidth = 2000
+    internal var fieldHeight = 1000
+
+    internal var windowWidth = 0f
+    internal var windowHeight = 0f
 
     override fun create() {
         batch = SpriteBatch()
         bitmapFont = BitmapFont()
 
-        val hexagonOpenedTexturesList = mutableListOf<Texture>()
-        for (i in 0..6) {
-            val hexagonFileHandle = Gdx.files.internal("cells/opened_$i.png")
+        // import Textures
+
+        fun generateHexagonTexture(name: String): Texture {
+            val hexagonFileHandle = Gdx.files.internal("cells/$name")
             val hexagonPixmap = Pixmap(hexagonFileHandle)
             val hexagonTexture = Texture(hexagonPixmap)
-            hexagonOpenedTexturesList.add(hexagonTexture)
 
             hexagonPixmap.dispose()
 
+            return hexagonTexture
+
         }
 
-        hexagonOpenedTextures = hexagonOpenedTexturesList.toTypedArray()
+        hexagonOpenedTextures = Array<Texture>(7) { i -> generateHexagonTexture("opened_$i.png") }
 
-        val hexagonClosedFileHandle = Gdx.files.internal("cells/closed.png")
-        val hexagonClosedPixmap = Pixmap(hexagonClosedFileHandle)
-        hexagonClosedTexture = Texture(hexagonClosedPixmap)
+        hexagonClosedTexture = generateHexagonTexture("closed.png")
+        hexagonFlaggedTexture = generateHexagonTexture("flagged.png")
+        hexagonBombTexture = generateHexagonTexture("bomb.png")
+        hexagonFakeTexture = generateHexagonTexture("fake.png")
 
-        hexagonClosedPixmap.dispose()
+        // game field
 
-        val hexagonFlaggedFileHandle = Gdx.files.internal("cells/flagged.png")
-        val hexagonFlaggedPixmap = Pixmap(hexagonFlaggedFileHandle)
-        hexagonFlaggedTexture = Texture(hexagonFlaggedPixmap)
+        windowWidth = Gdx.graphics.width.toFloat()
+        windowHeight = Gdx.graphics.height.toFloat()
 
-        hexagonFlaggedPixmap.dispose()
+        fieldWidth = (2 * windowWidth).toInt()
+        fieldHeight = (2 * windowHeight).toInt()
 
-        val hexagonBombFileHandle = Gdx.files.internal("cells/bomb.png")
-        val hexagonBombPixMap = Pixmap(hexagonBombFileHandle)
-        hexagonBombTexture = Texture(hexagonBombPixMap)
+        val backgroundPixmap = Pixmap(fieldWidth, fieldHeight, Pixmap.Format.RGB565);
+        backgroundPixmap.setColor(Color.DARK_GRAY)
+        backgroundPixmap.fill()
+        backgroundTexture = Texture(backgroundPixmap)
 
-        hexagonBombPixMap.dispose()
+        backgroundPixmap.dispose()
 
-        val hexagonFakeFileHandle = Gdx.files.internal("cells/fake.png")
-        val hexagonFakePixmap = Pixmap(hexagonFakeFileHandle)
-        hexagonFakeTexture = Texture(hexagonFakePixmap)
+        // camera
 
-        hexagonFakePixmap.dispose()
+        camera = OrthographicCamera(windowWidth, windowHeight)
+        center = Vector2(fieldWidth / 2f, fieldHeight / 2f)
+        camera.position.set(center, 0f)
+        camera.zoom = 2f
+        camera.update()
 
         Gdx.input.inputProcessor = this
 
@@ -83,32 +97,21 @@ class GameRenderer : ApplicationListener, InputProcessor {
     }
 
     override fun render() {
-
-        if (render > 0) {
+        if (render < numOfRendersPerChange) {
             Gdx.gl.glClearColor(1f, 1f, 1f, 1f)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
+            batch.projectionMatrix = camera.combined
             batch.begin()
 
-            drawBackground()
             drawField()
             drawLog()
 
             batch.end()
 
-            render--
+            render++
 
         }
-
-    }
-
-    private fun drawBackground() {
-
-        val pixmap = Pixmap(Gdx.graphics.width, Gdx.graphics.height, Pixmap.Format.RGB565)
-        pixmap.setColor(Color.DARK_GRAY)
-        pixmap.fill()
-        batch.draw(Texture(pixmap), 0f, 0f)
-
 
     }
 
@@ -122,6 +125,8 @@ class GameRenderer : ApplicationListener, InputProcessor {
             CellState.opened -> hexagonOpenedTextures[cell.numOfBombs]
 
         }
+
+        Sprite(backgroundTexture).draw(batch)
 
 
         var offsetX: Int
@@ -146,7 +151,6 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
         }
 
-
     }
 
     private val log = mutableListOf<String>()
@@ -158,7 +162,7 @@ class GameRenderer : ApplicationListener, InputProcessor {
         }
 
         log.forEachIndexed { index, str ->
-            bitmapFont.draw(batch, str, 10f, Gdx.graphics.height - 16f - index * 16f)
+            bitmapFont.draw(batch, str, 10f, (index + 1) * 16f)
         }
     }
 
@@ -175,14 +179,21 @@ class GameRenderer : ApplicationListener, InputProcessor {
     override fun touchDown(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
         render = numOfRendersPerChange
 
-        fun clickInSprite(sprite: Sprite, x: Int, y: Int)
+        println("Click at $p0, $p1, $p2, $p3")
+
+        val screenClickVector = Vector3(p0.toFloat(), p1.toFloat(), 0f)
+        camera.unproject(screenClickVector)
+
+        println("World ${screenClickVector.x}, ${screenClickVector.y}")
+
+        fun clickInSprite(sprite: Sprite, x: Float, y: Float)
                 = x > sprite.x && x < sprite.x + sprite.width
                 && y > sprite.y && y < sprite.y + sprite.height
 
         for (row in hexagonSprites)
             for (sprite in row)
-                if (clickInSprite(sprite, p0, p1)) {
-                    val i = hexagonSprites.size - hexagonSprites.indexOf(row) - 1
+                if (clickInSprite(sprite, screenClickVector.x, screenClickVector.y)) {
+                    val i = hexagonSprites.indexOf(row)
                     val j = row.indexOf(sprite)
 
                     println("$i, $j")
@@ -197,22 +208,13 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
                 }
 
+        startRender()
+
         return true
 
     }
 
-    fun checkFinished(): Boolean {
-        var finished = true
-
-        for (row in game.field)
-            for (cell in row)
-                finished = finished
-                        && ((cell.bomb && cell.state == CellState.flagged)
-                        || (!cell.bomb && cell.state == CellState.opened))
-
-        return finished
-
-    }
+    fun startRender() { render = 0 }
 
 
     // useless
@@ -263,4 +265,3 @@ class GameRenderer : ApplicationListener, InputProcessor {
 fun log(s: String){
     INSTANCE?.log(s)
 }
-
