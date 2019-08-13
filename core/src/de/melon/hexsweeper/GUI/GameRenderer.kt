@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector3
 import de.melon.hexsweeper.logic.Cell
 import de.melon.hexsweeper.logic.CellState
 import de.melon.hexsweeper.logic.Game
+import de.melon.hexsweeper.logic.GameState
 
 class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProcessor {
 
@@ -44,7 +45,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     override fun create() {
         fieldBatch = SpriteBatch()
-        bitmapFont = BitmapFont()
+        endScreenBatch = SpriteBatch()
 
         importTextures()
         setFieldAndCamera()
@@ -168,6 +169,18 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     }
 
     private fun drawEndScreen() {
+        if (game.state != GameState.running) {
+            endScreenBatch.begin()
+
+            var texture = gameOverTexture
+            if (game.state == GameState.win) texture = youWonTexture
+
+            val sprite = Sprite(texture)
+            sprite.draw(endScreenBatch)
+
+            endScreenBatch.end()
+
+        }
 
     }
 

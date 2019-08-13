@@ -29,7 +29,7 @@ class Game {
         if (state == GameState.running) {
 
             if (!field.open(i, j)) {
-                state = GameState.end
+                state = GameState.loose
 
             }
 
@@ -69,7 +69,7 @@ class Game {
                         || (!cell.bomb && cell.state == CellState.opened))
 
         if (win) {
-            state = GameState.end
+            state = GameState.win
         }
 
     }
