@@ -15,11 +15,10 @@ import de.melon.hexsweeper.logic.Game
 
 class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProcessor {
 
-    internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
-
-    internal lateinit var center: Vector2
     internal lateinit var camera: OrthographicCamera
-    internal lateinit var batch: SpriteBatch
+    internal lateinit var fieldBatch: SpriteBatch
+    internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
+    internal lateinit var endScreenBatch: SpriteBatch
 
     internal val offsetX = 50
     internal val offsetXbonus = 77
@@ -44,7 +43,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     lateinit var bitmapFont: BitmapFont
 
     override fun create() {
-        batch = SpriteBatch()
+        fieldBatch = SpriteBatch()
         bitmapFont = BitmapFont()
 
         importTextures()
@@ -106,7 +105,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         // camera
         camera = OrthographicCamera(windowWidth, windowHeight)
-        center = Vector2(fieldWidth / 2f, fieldHeight / 2f)
+        val center = Vector2(fieldWidth / 2f, fieldHeight / 2f)
         camera.position.set(center, 0f)
         camera.zoom = scaling
         camera.update()
@@ -118,13 +117,8 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
             Gdx.gl.glClearColor(1f, 1f, 1f, 1f)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-            batch.projectionMatrix = camera.combined
-            batch.begin()
-
             drawField()
             drawEndScreen()
-
-            batch.end()
 
             render++
 
@@ -143,7 +137,10 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         }
 
-        Sprite(backgroundTexture).draw(batch)
+        fieldBatch.projectionMatrix = camera.combined
+        fieldBatch.begin()
+
+        Sprite(backgroundTexture).draw(fieldBatch)
 
         var offsetXcomp: Int
 
@@ -158,7 +155,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
             for (j in 0 until game.field.cells[i].size) {
                 val hexagonSprite = Sprite(selectTexture(game.field.cells[i][j]))
                 hexagonSprite.setPosition(j * cellSpacingX + offsetXcomp, i * cellSpacingY + offsetY)
-                hexagonSprite.draw(batch)
+                hexagonSprite.draw(fieldBatch)
 
                 hexagonSprites[i].add(hexagonSprite)
 
@@ -166,15 +163,17 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         }
 
+        fieldBatch.end()
+
     }
 
     private fun drawEndScreen() {
-        
+
     }
 
 
     override fun dispose() {
-        batch.dispose()
+        fieldBatch.dispose()
 
     }
 
