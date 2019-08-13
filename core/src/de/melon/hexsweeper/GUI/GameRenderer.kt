@@ -15,12 +15,7 @@ import de.melon.hexsweeper.logic.Game
 
 var INSTANCE: GameRenderer? = null
 
-class GameRenderer : ApplicationListener, InputProcessor {
-
-    constructor(scaling: Float) {
-        this.scaling = scaling
-
-    }
+class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProcessor {
 
     internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
 
@@ -45,8 +40,6 @@ class GameRenderer : ApplicationListener, InputProcessor {
     internal val numOfRendersPerChange = 2
     internal var render = 0
     lateinit var bitmapFont: BitmapFont
-
-    internal var scaling = 2f
 
     override fun create() {
         batch = SpriteBatch()
