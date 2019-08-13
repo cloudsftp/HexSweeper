@@ -44,7 +44,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     internal val numOfRendersPerChange = 2
     internal var render = 0
-    lateinit var bitmapFont: BitmapFont
 
     override fun create() {
         fieldBatch = SpriteBatch()
@@ -72,7 +71,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         fun generateHexagonTexture(name: String) = generateTexture("cells/$name")
         fun generateScreenTexture(name: String) = generateTexture("screens/$name")
 
-        hexagonOpenedTextures = Array<Texture>(7) { i -> generateHexagonTexture("opened_$i.png") }
+        hexagonOpenedTextures = Array(7) { i -> generateHexagonTexture("opened_$i.png") }
 
         hexagonClosedTexture = generateHexagonTexture("closed.png")
         hexagonFlaggedTexture = generateHexagonTexture("flagged.png")
