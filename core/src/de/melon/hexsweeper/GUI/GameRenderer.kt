@@ -47,8 +47,14 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         batch = SpriteBatch()
         bitmapFont = BitmapFont()
 
-        // import Textures
+        importTextures()
+        setFieldAndCamera()
 
+        Gdx.input.inputProcessor = this
+
+    }
+
+    private fun importTextures() {
         fun generateTexture(name: String): Texture {
             val hexagonFileHandle = Gdx.files.internal(name)
             val hexagonPixmap = Pixmap(hexagonFileHandle)
@@ -73,8 +79,10 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         gameOverTexture = generateScreenTexture("gameover.png")
         youWonTexture = generateScreenTexture("youwon.png")
 
-        // game field
+    }
 
+    private fun setFieldAndCamera() {
+        // field
         val windowWidth = Gdx.graphics.width.toFloat()
         val windowHeight = Gdx.graphics.height.toFloat()
 
@@ -97,14 +105,11 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         game = Game(n, m)
 
         // camera
-
         camera = OrthographicCamera(windowWidth, windowHeight)
         center = Vector2(fieldWidth / 2f, fieldHeight / 2f)
         camera.position.set(center, 0f)
         camera.zoom = scaling
         camera.update()
-
-        Gdx.input.inputProcessor = this
 
     }
 
@@ -117,6 +122,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
             batch.begin()
 
             drawField()
+            drawEndScreen()
 
             batch.end()
 
@@ -160,6 +166,10 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         }
 
+    }
+
+    private fun drawEndScreen() {
+        
     }
 
 
