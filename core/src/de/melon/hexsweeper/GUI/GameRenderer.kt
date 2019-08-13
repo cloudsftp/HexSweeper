@@ -17,11 +17,6 @@ var INSTANCE: GameRenderer? = null
 
 class GameRenderer : ApplicationListener, InputProcessor {
 
-    val n = 13
-    val m = 6
-
-    val game = Game(n , m)
-
     internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
 
     internal lateinit var center: Vector2
@@ -34,15 +29,11 @@ class GameRenderer : ApplicationListener, InputProcessor {
     internal lateinit var hexagonFakeTexture: Texture
     internal lateinit var hexagonOpenedTextures: Array<Texture>
 
+    internal lateinit var game: Game
+
     internal val numOfRendersPerChange = 2
     internal var render = 0
     lateinit var bitmapFont: BitmapFont
-
-    internal var fieldWidth = 2000
-    internal var fieldHeight = 1000
-
-    internal var windowWidth = 0f
-    internal var windowHeight = 0f
 
     override fun create() {
         batch = SpriteBatch()
@@ -70,18 +61,20 @@ class GameRenderer : ApplicationListener, InputProcessor {
 
         // game field
 
-        windowWidth = Gdx.graphics.width.toFloat()
-        windowHeight = Gdx.graphics.height.toFloat()
+        val windowWidth = Gdx.graphics.width.toFloat()
+        val windowHeight = Gdx.graphics.height.toFloat()
 
-        fieldWidth = (2 * windowWidth).toInt()
-        fieldHeight = (2 * windowHeight).toInt()
+        val fieldWidth = (2 * windowWidth).toInt()
+        val fieldHeight = (2 * windowHeight).toInt()
 
-        val backgroundPixmap = Pixmap(fieldWidth, fieldHeight, Pixmap.Format.RGB565);
+        val backgroundPixmap = Pixmap(fieldWidth, fieldHeight, Pixmap.Format.RGB565)
         backgroundPixmap.setColor(Color.DARK_GRAY)
         backgroundPixmap.fill()
         backgroundTexture = Texture(backgroundPixmap)
 
         backgroundPixmap.dispose()
+
+        
 
         // camera
 
