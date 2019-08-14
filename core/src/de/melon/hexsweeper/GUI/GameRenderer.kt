@@ -215,8 +215,11 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
             var hit = true
 
             hit = hit && relativeY < 2 * relativeX + sprite.height
+            hit = hit && relativeY < sprite.height / 2f
             hit = hit && relativeY < sprite.height - 2 * relativeX
+
             hit = hit && relativeY > 2 * relativeX - sprite.height
+            hit = hit && relativeX > - sprite.height / 2f
             hit = hit && relativeY > - sprite.height - 2 * relativeX
 
             return hit
