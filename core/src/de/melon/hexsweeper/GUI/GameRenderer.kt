@@ -207,9 +207,21 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         println("World ${screenClickVector.x}, ${screenClickVector.y}")
 
-        fun clickInSprite(sprite: Sprite, x: Float, y: Float)
-                = x > sprite.x && x < sprite.x + sprite.width
-                && y > sprite.y && y < sprite.y + sprite.height
+        fun clickInSprite(sprite: Sprite, x: Float, y: Float): Boolean {
+            val center = Vector2(sprite.x + sprite.width / 2f, sprite.y + sprite.height / 2f)
+            val relativeX = x - center.x
+            val relativeY = y - center.y
+
+            var hit = true
+
+            hit = hit && relativeY < 2 * relativeX + sprite.height
+            hit = hit && relativeY < sprite.height - 2 * relativeX
+            hit = hit && relativeY > 2 * relativeX - sprite.height
+            hit = hit && relativeY > - sprite.height - 2 * relativeX
+
+            return hit
+
+        }
 
         for (row in hexagonSprites)
             for (sprite in row)
