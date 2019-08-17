@@ -171,7 +171,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     }
 
     private fun drawEndScreen() {
-        if (game.state != GameState.running) {
+        if (game.state != GameState.running && game.state != GameState.idle) {
             endScreenBatch.begin()
 
             var texture = gameOverTexture

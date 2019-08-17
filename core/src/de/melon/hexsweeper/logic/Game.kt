@@ -1,18 +1,6 @@
 package de.melon.hexsweeper.logic
 
-class Game {
-
-    var n = 0
-    var m = 0
-
-    constructor(n: Int, m: Int) {
-
-        this.n = n
-        this.m = m
-
-        start(n, m)
-
-    }
+class Game(val n: Int, val m: Int) {
 
     fun start(n: Int, m: Int) {
 
@@ -21,8 +9,8 @@ class Game {
 
     }
 
-    lateinit var field: Field
-    var state = GameState.running
+    internal var field = Field(n, m)
+    internal var state = GameState.idle
 
     fun processOpen(i: Int, j: Int) {
 
