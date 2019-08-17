@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>A:\Projects\HexSweeper\desktop\build\libs\desktop-HEX.01.03.jar</jar>
+  <outfile>A:\Projects\HexSweeper\launch4j\HEX.01.04.desktop.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine>java -jar de.melon.hexsweeper.DesktopLauncher</cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest>A:\Projects\HexSweeper\launch4j\HEX.manifest</manifest>
+  <icon>A:\Projects\HexSweeper\launch4j\favicon.ico</icon>
+  <jre>
+    <path>C:\Program Files\Java\jre1.8.0_211</path>
+    <bundledJre64Bit>true</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
+    <minVersion></minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <runtimeBits>64/32</runtimeBits>
+  </jre>
+</launch4jConfig>
