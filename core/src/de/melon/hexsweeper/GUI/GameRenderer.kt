@@ -281,7 +281,12 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     }
 
     override fun scrolled(p0: Int): Boolean {
-        return false
+
+        camera.zoom += p0 * 0.1f
+        camera.update()
+        startRender()
+
+        return true
     }
 
     override fun keyTyped(p0: Char): Boolean {
