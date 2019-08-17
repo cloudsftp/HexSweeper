@@ -19,7 +19,7 @@ buildscript {
 
 allprojects {
 
-    version = 'HEX.01.03'
+    version = 'HEX.01.04'
     ext {
         appName = "HexSweeper"
         gdxVersion = '1.9.10'
@@ -36,6 +36,17 @@ allprojects {
         google()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+    }
+}
+
+project(":core") {
+    apply plugin: "kotlin"
+
+
+    dependencies {
+        api "com.badlogicgames.gdx:gdx:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     }
 }
 
@@ -76,7 +87,6 @@ project(":android") {
         compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     }
 }
-*/
 
 project(":ios") {
     apply plugin: "kotlin"
@@ -93,14 +103,4 @@ project(":ios") {
         compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     }
 }
-
-project(":core") {
-    apply plugin: "kotlin"
-
-
-    dependencies {
-        api "com.badlogicgames.gdx:gdx:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    }
-}
+*/
