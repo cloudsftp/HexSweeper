@@ -30,15 +30,13 @@ class Game(val n: Int, val m: Int) {
 
     fun processFlag(i: Int, j: Int) {
 
+        processClick(i, j)
+
         if (state == GameState.running) {
 
             field.toggleFlag(i, j)
 
             checkForWin()
-
-        } else {
-
-            start(i, j)
 
         }
 
