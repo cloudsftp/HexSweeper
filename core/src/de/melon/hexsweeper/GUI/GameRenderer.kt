@@ -250,6 +250,19 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     }
 
+    override fun scrolled(p0: Int): Boolean {
+
+        var newZoom = (1 + 0.1f * p0) * camera.zoom
+        if (newZoom > scaling) newZoom = scaling
+
+        camera.zoom = newZoom
+        camera.update()
+
+        startRender()
+
+        return true
+    }
+
     fun startRender() { render = 0 }
 
 
@@ -277,10 +290,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     }
 
     override fun mouseMoved(p0: Int, p1: Int): Boolean {
-        return false
-    }
-
-    override fun scrolled(p0: Int): Boolean {
         return false
     }
 
