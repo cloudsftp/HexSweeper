@@ -19,7 +19,7 @@ buildscript {
 
 allprojects {
 
-    version = 'HEX.01.03'
+    version = 'HEX.01.04'
     ext {
         appName = "HexSweeper"
         gdxVersion = '1.9.10'
