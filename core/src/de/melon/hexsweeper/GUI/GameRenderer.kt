@@ -198,14 +198,9 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     }
 
     override fun touchDown(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
-        render = numOfRendersPerChange
-
-        println("Click at $p0, $p1, $p2, $p3")
 
         val screenClickVector = Vector3(p0.toFloat(), p1.toFloat(), 0f)
         camera.unproject(screenClickVector)
-
-        println("World ${screenClickVector.x}, ${screenClickVector.y}")
 
         fun clickInSprite(sprite: Sprite, x: Float, y: Float): Boolean {
             val center = Vector2(sprite.x + sprite.width / 2f, sprite.y + sprite.height / 2f)
@@ -285,8 +280,31 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         return false
     }
 
+    var lastDragPosition = Vector3(Float.NaN, Float.NaN, 0f)
+
     override fun touchDragged(p0: Int, p1: Int, p2: Int): Boolean {
-        return false
+        val p0f = p0.toFloat()
+        val p1f = p1.toFloat()
+
+        val currentDragPosition = camera.unproject(Vector3(p0f, p1f, 0f))
+
+        if (lastDragPosition.x.isNaN()) {
+            lastDragPosition = currentDragPosition
+
+        } else {
+            val drag = currentDragPosition.cpy()
+            drag.sub(lastDragPosition)
+
+            camera.position.sub(drag)
+            camera.update()
+
+            startRender()
+
+            lastDragPosition = currentDragPosition.cpy()
+
+        }
+
+        return true
     }
 
     override fun mouseMoved(p0: Int, p1: Int): Boolean {
