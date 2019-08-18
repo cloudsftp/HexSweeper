@@ -123,9 +123,12 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
             drawField()
             drawEndScreen()
 
-            render++
+        } else if (render < numOfRendersPerChange + 1) {
+            resetDrag()
 
         }
+
+        render++
 
     }
 
@@ -265,6 +268,11 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     // movement
 
     var lastDragPosition = Vector3(Float.NaN, Float.NaN, 0f)
+
+    fun resetDrag() {
+        lastDragPosition = Vector3(Float.NaN, Float.NaN, 0f)
+
+    }
 
     override fun touchDragged(p0: Int, p1: Int, p2: Int): Boolean {
         val p0f = p0.toFloat()
