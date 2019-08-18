@@ -16,34 +16,8 @@ import de.melon.hexsweeper.logic.GameState
 
 class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProcessor {
 
-    internal lateinit var camera: OrthographicCamera
     internal lateinit var fieldBatch: SpriteBatch
-    internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
     internal lateinit var endScreenBatch: SpriteBatch
-
-    internal var windowWidth = 0f
-    internal var windowHeight = 0f
-
-    internal val offsetX = 50
-    internal val offsetXbonus = 77
-    internal val offsetY = 45
-    internal val cellSpacingX = 153f
-    internal val cellSpacingY = 45f
-
-    internal lateinit var backgroundTexture: Texture
-    internal lateinit var hexagonClosedTexture: Texture
-    internal lateinit var hexagonFlaggedTexture: Texture
-    internal lateinit var hexagonBombTexture: Texture
-    internal lateinit var hexagonFakeTexture: Texture
-    internal lateinit var hexagonOpenedTextures: Array<Texture>
-
-    internal lateinit var gameOverTexture: Texture
-    internal lateinit var youWonTexture: Texture
-
-    internal lateinit var game: Game
-
-    internal val numOfRendersPerChange = 2
-    internal var render = 0
 
     override fun create() {
         fieldBatch = SpriteBatch()
@@ -55,6 +29,16 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         Gdx.input.inputProcessor = this
 
     }
+
+    internal lateinit var backgroundTexture: Texture
+    internal lateinit var hexagonClosedTexture: Texture
+    internal lateinit var hexagonFlaggedTexture: Texture
+    internal lateinit var hexagonBombTexture: Texture
+    internal lateinit var hexagonFakeTexture: Texture
+    internal lateinit var hexagonOpenedTextures: Array<Texture>
+
+    internal lateinit var gameOverTexture: Texture
+    internal lateinit var youWonTexture: Texture
 
     private fun importTextures() {
         fun generateTexture(name: String): Texture {
@@ -82,6 +66,19 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         youWonTexture = generateScreenTexture("youwon.png")
 
     }
+
+    internal lateinit var camera: OrthographicCamera
+
+    internal var windowWidth = 0f
+    internal var windowHeight = 0f
+
+    internal val offsetX = 50
+    internal val offsetXbonus = 77
+    internal val offsetY = 45
+    internal val cellSpacingX = 153f
+    internal val cellSpacingY = 45f
+
+    internal lateinit var game: Game
 
     private fun setFieldAndCamera() {
         // field
@@ -115,6 +112,9 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     }
 
+    internal val numOfRendersPerChange = 2
+    internal var render = 0
+
     override fun render() {
         if (render < numOfRendersPerChange) {
             Gdx.gl.glClearColor(1f, 1f, 1f, 1f)
@@ -132,6 +132,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     }
 
+    internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
 
     private fun drawField() {
         fun selectTexture(cell: Cell) = when(cell.state) {
@@ -298,7 +299,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         fieldBatch.dispose()
 
     }
-    
+
 
 
     // useless
