@@ -245,6 +245,8 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     }
 
+    // zoom
+
     override fun scrolled(p0: Int): Boolean {
 
         var newZoom = (1 + 0.1f * p0) * camera.zoom
@@ -260,25 +262,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     fun startRender() { render = 0 }
 
-
-    // useless
-
-    override fun pause() {
-
-    }
-
-    override fun resize(p0: Int, p1: Int) {
-
-    }
-
-    override fun resume() {
-
-    }
-
-
-    override fun touchUp(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
-        return false
-    }
+    // movement
 
     var lastDragPosition = Vector3(Float.NaN, Float.NaN, 0f)
 
@@ -305,6 +289,26 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         }
 
         return true
+    }
+
+
+    // useless
+
+    override fun pause() {
+
+    }
+
+    override fun resize(p0: Int, p1: Int) {
+
+    }
+
+    override fun resume() {
+
+    }
+
+
+    override fun touchUp(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
+        return false
     }
 
     override fun mouseMoved(p0: Int, p1: Int): Boolean {
