@@ -194,12 +194,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     }
 
-
-    override fun dispose() {
-        fieldBatch.dispose()
-
-    }
-
     override fun touchDown(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
 
         val screenClickVector = Vector3(p0.toFloat(), p1.toFloat(), 0f)
@@ -298,6 +292,13 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         return true
     }
+
+
+    override fun dispose() {
+        fieldBatch.dispose()
+
+    }
+    
 
 
     // useless
