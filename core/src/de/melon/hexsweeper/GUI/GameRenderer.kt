@@ -124,9 +124,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
             drawField()
             drawEndScreen()
 
-        } else if (render < numOfRendersPerChange + 1) {
-            resetDrag()
-
         }
 
         render++
@@ -248,6 +245,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     }
 
     override fun touchDown(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
+        lastDragPosition = camera.unproject(Vector3(p0.toFloat(), p1.toFloat(), 0f))
         return false
     }
 
@@ -272,31 +270,18 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     var lastDragPosition = Vector3(Float.NaN, Float.NaN, 0f)
 
-    fun resetDrag() {
-        lastDragPosition = Vector3(Float.NaN, Float.NaN, 0f)
-
-    }
-
     override fun touchDragged(p0: Int, p1: Int, p2: Int): Boolean {
         val p0f = p0.toFloat()
         val p1f = p1.toFloat()
 
         val currentDragPosition = camera.unproject(Vector3(p0f, p1f, 0f))
 
-        if (lastDragPosition.x.isNaN()) {
-            lastDragPosition = currentDragPosition
+        val drag = currentDragPosition.cpy()
+        drag.sub(lastDragPosition)
+        camera.position.sub(drag)
+        camera.update()
 
-        } else {
-            val drag = currentDragPosition.cpy()
-            drag.sub(lastDragPosition)
-
-            camera.position.sub(drag)
-            camera.update()
-
-            startRender()
-
-            lastDragPosition = currentDragPosition.cpy()
-        }
+        startRender()
 
         dragged = true
 
