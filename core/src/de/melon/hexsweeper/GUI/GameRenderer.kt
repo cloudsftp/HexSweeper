@@ -4,7 +4,6 @@ import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.*
-import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
@@ -79,6 +78,8 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     internal val cellSpacingY = 45f
 
     internal lateinit var game: Game
+
+    var dragged = false
 
     private fun setFieldAndCamera() {
         // field
@@ -195,7 +196,11 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     }
 
-    override fun touchDown(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
+    override fun touchUp(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
+        if(dragged){
+            dragged = false
+            return true
+        }
 
         val screenClickVector = Vector3(p0.toFloat(), p1.toFloat(), 0f)
         camera.unproject(screenClickVector)
@@ -240,7 +245,10 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         startRender()
 
         return true
+    }
 
+    override fun touchDown(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
+        return false
     }
 
     // zoom
@@ -288,8 +296,9 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
             startRender()
 
             lastDragPosition = currentDragPosition.cpy()
-
         }
+
+        dragged = true
 
         return true
     }
@@ -314,11 +323,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     override fun resume() {
 
-    }
-
-
-    override fun touchUp(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
-        return false
     }
 
     override fun mouseMoved(p0: Int, p1: Int): Boolean {
