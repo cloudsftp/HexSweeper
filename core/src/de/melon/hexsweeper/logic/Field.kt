@@ -60,7 +60,7 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
 
         }
 
-        val offset = (i + 1) % 2
+        val offset = i % 2
 
         // Two rows above
         addIndicesSafe(i - 2, j)
@@ -102,7 +102,7 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
             for (i in 0 until n) {
                 val rowList = mutableListOf<Cell>()
 
-                for (j in 0 until m + ((i + 1) % 2) - 1)
+                for (j in 0 until m + (i % 2) - 1)
                     rowList.add(Cell(nextDouble(1.0) < prob))
 
                 list.add(rowList.toTypedArray())
