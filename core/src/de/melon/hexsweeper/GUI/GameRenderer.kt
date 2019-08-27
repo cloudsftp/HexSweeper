@@ -162,7 +162,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
             hexagonSprites.add(mutableListOf())
 
             offsetXcomp = offsetX
-            offsetXcomp += if (i % 2 == 0) offsetXbonus else 0
+            offsetXcomp += if ((i + 1) % 2 == 0) offsetXbonus else 0
 
             for (j in 0 until game.field.cells[i].size) {
                 val hexagonSprite = Sprite(selectTexture(game.field.cells[i][j]))
