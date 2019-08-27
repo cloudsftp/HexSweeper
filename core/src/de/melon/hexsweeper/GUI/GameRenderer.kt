@@ -295,6 +295,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     override fun resize(p0: Int, p1: Int) {
         viewPort.update(p0, p1)
+        startRender()
     }
 
 
