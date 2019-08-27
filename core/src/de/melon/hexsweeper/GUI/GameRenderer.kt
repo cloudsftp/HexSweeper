@@ -105,7 +105,9 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         var m = 0
 
         while (n * cellSpacingY + offsetY + 100 < fieldHeight) n++
+        if (n % 2 == 0) n--
         while (m * cellSpacingX + offsetX + 100 < fieldWidth) m++
+        if (m % 2 == 0) m--
 
         game = Game(n, m)
 

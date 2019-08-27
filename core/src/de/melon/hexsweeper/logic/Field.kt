@@ -7,8 +7,8 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
     constructor(n: Int, m:Int, prob: Double = 0.2) : this(buildArrayWithDim(n, m, prob))
 
     init {
-        for (i in 0 until cells.size)
-            for (j in 0 until cells[i].size)
+        for (i in cells.indices)
+            for (j in cells[i].indices)
                 determineNumOfAdjacentBombs(i, j)
 
     }
@@ -22,13 +22,6 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
         cells[i][j].numOfBombs = numOfBombs
 
     }
-
-    val maxWidth: Int
-    get() = cells.iterator().asSequence().maxBy { c -> c.size }!!.size
-
-    val maxHeight: Int
-    get()  = cells.size
-
 
     fun open(i: Int, j: Int): Boolean {
 
