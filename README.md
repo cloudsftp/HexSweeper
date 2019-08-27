@@ -4,6 +4,10 @@
 Travis build of branch develop:
 ![Build Status](https://travis-ci.org/cloudsftp/HexSweeper.svg?branch=develop)
 
+# Download latest Release
+
+[click here](https://github.com/cloudsftp/HexSweeper/releases)
+
 This Project uses **Gitflow** for version control
 and **Gradle** for dependencies and builds.
 
