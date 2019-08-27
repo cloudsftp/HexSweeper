@@ -3,7 +3,7 @@ language: java
 install: true
 before_install: chmod +x gradlew
 
-script: ./gradlew :desktop:build
+script: ./gradlew :desktop:dist
 
 deploy:
   provider: releases
