@@ -8,6 +8,10 @@ import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.utils.Scaling
+import com.badlogic.gdx.utils.viewport.FitViewport
+import com.badlogic.gdx.utils.viewport.ScalingViewport
+import com.badlogic.gdx.utils.viewport.Viewport
 import de.melon.hexsweeper.logic.Cell
 import de.melon.hexsweeper.logic.CellState
 import de.melon.hexsweeper.logic.Game
@@ -67,6 +71,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     }
 
     internal lateinit var camera: OrthographicCamera
+    internal lateinit var viewPort: Viewport
 
     internal var windowWidth = 0f
     internal var windowHeight = 0f
@@ -110,6 +115,8 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         camera.position.set(center, 0f)
         camera.zoom = scaling
         camera.update()
+
+        viewPort = ScalingViewport(Scaling.fill, windowWidth, windowHeight, camera)
 
     }
 
@@ -288,6 +295,11 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         return true
     }
 
+    override fun resize(p0: Int, p1: Int) {
+        viewPort.update(p0, p1)
+        startRender()
+    }
+
 
     override fun dispose() {
         fieldBatch.dispose()
@@ -299,10 +311,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     // useless
 
     override fun pause() {
-
-    }
-
-    override fun resize(p0: Int, p1: Int) {
 
     }
 
