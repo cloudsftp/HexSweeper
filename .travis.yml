@@ -1,7 +1,6 @@
 language: java
 
 install: true
-before_install: chmod +x gradlew
 
 script: ./gradlew :desktop:dist
 
