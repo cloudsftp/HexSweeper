@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.Scaling
-import com.badlogic.gdx.utils.viewport.FitViewport
 import com.badlogic.gdx.utils.viewport.ScalingViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 import de.melon.hexsweeper.logic.Cell
@@ -202,14 +201,20 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     }
 
-    override fun touchDown(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
-        lastDragPosition = camera.unproject(Vector3(p0.toFloat(), p1.toFloat(), 0f))
-        return false
-    }
-
     var lastDragPosition = Vector3(Float.NaN, Float.NaN, 0f)
 
+    override fun touchDown(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
+        lastDragPosition = camera.unproject(Vector3(p0.toFloat(), p1.toFloat(), 0f))
+        ticks = 0
+        return true
+    }
+
+    val numberOfTicksLongClick = 3
+    var ticks = 0
+
     override fun touchDragged(p0: Int, p1: Int, p2: Int): Boolean {
+        if (ticks++ < numberOfTicksLongClick) return true
+
         val p0f = p0.toFloat()
         val p1f = p1.toFloat()
 
