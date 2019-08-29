@@ -202,6 +202,31 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     }
 
+    override fun touchDown(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
+        lastDragPosition = camera.unproject(Vector3(p0.toFloat(), p1.toFloat(), 0f))
+        return false
+    }
+
+    var lastDragPosition = Vector3(Float.NaN, Float.NaN, 0f)
+
+    override fun touchDragged(p0: Int, p1: Int, p2: Int): Boolean {
+        val p0f = p0.toFloat()
+        val p1f = p1.toFloat()
+
+        val currentDragPosition = camera.unproject(Vector3(p0f, p1f, 0f))
+
+        val drag = currentDragPosition.cpy()
+        drag.sub(lastDragPosition)
+        camera.position.sub(drag)
+        camera.update()
+
+        startRender()
+
+        dragged = true
+
+        return true
+    }
+
     override fun touchUp(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
         if(dragged){
             dragged = false
@@ -253,11 +278,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         return true
     }
 
-    override fun touchDown(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
-        lastDragPosition = camera.unproject(Vector3(p0.toFloat(), p1.toFloat(), 0f))
-        return false
-    }
-
     // zoom
 
     override fun scrolled(p0: Int): Boolean {
@@ -274,28 +294,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     }
 
     fun startRender() { render = 0 }
-
-    // movement
-
-    var lastDragPosition = Vector3(Float.NaN, Float.NaN, 0f)
-
-    override fun touchDragged(p0: Int, p1: Int, p2: Int): Boolean {
-        val p0f = p0.toFloat()
-        val p1f = p1.toFloat()
-
-        val currentDragPosition = camera.unproject(Vector3(p0f, p1f, 0f))
-
-        val drag = currentDragPosition.cpy()
-        drag.sub(lastDragPosition)
-        camera.position.sub(drag)
-        camera.update()
-
-        startRender()
-
-        dragged = true
-
-        return true
-    }
 
     override fun resize(p0: Int, p1: Int) {
         viewPort.update(p0, p1)
