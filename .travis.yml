@@ -2,9 +2,9 @@ language: java
 
 install: true
 
-before_script:
-  - touch $HOME/.gradle/gradle.properties
-  - echo org.gradle.daemon=false >> $HOME/.gradle/gradle.properties
+#before_script:
+#  - touch $HOME/.gradle/gradle.properties
+#  - echo org.gradle.daemon=false >> $HOME/.gradle/gradle.properties
 
 script: ./gradlew :desktop:dist
 
