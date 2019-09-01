@@ -3,7 +3,7 @@ language: java
 install: true
 
 before_script:
-  - cat $HOME/.gradle/gradle.properties
+  - touch $HOME/.gradle/gradle.properties
   - echo org.gradle.daemon=false >> $HOME/.gradle/gradle.properties
 
 script: ./gradlew :desktop:dist
