@@ -35,6 +35,7 @@ task dist(type: Jar) {
 }
 
 launch4j {
+    outfile = "HexSweeper.${version}.exe"
     mainClassName = project.mainClassName
     icon = "$projectDir/../android/assets/icon.ico"
 }
