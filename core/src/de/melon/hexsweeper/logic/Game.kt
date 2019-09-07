@@ -1,33 +1,22 @@
 package de.melon.hexsweeper.logic
 
-class Game {
+class Game(val n: Int, val m: Int) {
 
-    var n = 0
-    var m = 0
+    internal var field = Field(n, m)
+    internal var state = GameState.idle
 
-    constructor(n: Int, m: Int) {
+    fun start(i: Int, j: Int) {
 
-        this.n = n
-        this.m = m
-
-        start(n, m)
-
-    }
-
-    fun start(n: Int, m: Int) {
-
-        field = Field(n, m)
+        do buildField() while (field.cells[i][j].bomb)
         state = GameState.running
 
     }
 
-    lateinit var field: Field
-    var state = GameState.running
-
     fun processOpen(i: Int, j: Int) {
 
-        if (state == GameState.running) {
+        processClick(i, j)
 
+        if (state == GameState.running) {
             if (!field.open(i, j)) {
                 state = GameState.loose
 
@@ -35,15 +24,13 @@ class Game {
 
             checkForWin()
 
-        } else {
-
-            start(n, m)
-
         }
 
     }
 
     fun processFlag(i: Int, j: Int) {
+
+        processClick(i, j)
 
         if (state == GameState.running) {
 
@@ -51,13 +38,23 @@ class Game {
 
             checkForWin()
 
-        } else {
+        }
 
-            start(n, m)
+    }
+
+    fun processClick(i: Int, j: Int) {
+        if (state == GameState.win || state == GameState.loose) {
+            buildField()
+            state = GameState.idle
+
+        } else if (state == GameState.idle) {
+            start(i, j)
 
         }
 
     }
+
+    fun buildField() { field = Field(n, m) }
 
     fun checkForWin() {
         var win = true

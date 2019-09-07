@@ -1,6 +1,23 @@
 language: java
 
 install: true
-before_install: chmod +x gradlew
 
-script: ./gradlew build
+before_script:
+  - touch $HOME/.gradle/gradle.properties
+  - echo org.gradle.daemon=false >> $HOME/.gradle/gradle.properties
+
+script: ./gradlew :desktop:dist
+
+before_cache: rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+cache:
+  directories:
+  - $HOME/.gradle/caches/
+
+deploy:
+  provider: releases
+  api_key: $GH_TOKEN
+  file_glob: true
+  file: desktop/build/libs/*
+  skip_cleanup: true
+  on:
+    tags: true

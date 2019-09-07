@@ -21,7 +21,7 @@ buildscript {
 allprojects {
 
     ext {
-        versionNumber = '01.03'
+        versionNumber = '01.05'
         appName = "HexSweeper"
         gdxVersion = '1.9.10'
         roboVMVersion = '2.3.7'
@@ -40,6 +40,7 @@ allprojects {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
     }
+
 }
 
 project(":core") {

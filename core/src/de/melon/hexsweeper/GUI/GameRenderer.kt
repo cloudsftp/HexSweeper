@@ -4,11 +4,13 @@ import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.*
-import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.utils.Scaling
+import com.badlogic.gdx.utils.viewport.ScalingViewport
+import com.badlogic.gdx.utils.viewport.Viewport
 import de.melon.hexsweeper.logic.Cell
 import de.melon.hexsweeper.logic.CellState
 import de.melon.hexsweeper.logic.Game
@@ -16,34 +18,8 @@ import de.melon.hexsweeper.logic.GameState
 
 class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProcessor {
 
-    internal lateinit var camera: OrthographicCamera
     internal lateinit var fieldBatch: SpriteBatch
-    internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
     internal lateinit var endScreenBatch: SpriteBatch
-
-    internal var windowWidth = 0f
-    internal var windowHeight = 0f
-
-    internal val offsetX = 50
-    internal val offsetXbonus = 77
-    internal val offsetY = 45
-    internal val cellSpacingX = 153f
-    internal val cellSpacingY = 45f
-
-    internal lateinit var backgroundTexture: Texture
-    internal lateinit var hexagonClosedTexture: Texture
-    internal lateinit var hexagonFlaggedTexture: Texture
-    internal lateinit var hexagonBombTexture: Texture
-    internal lateinit var hexagonFakeTexture: Texture
-    internal lateinit var hexagonOpenedTextures: Array<Texture>
-
-    internal lateinit var gameOverTexture: Texture
-    internal lateinit var youWonTexture: Texture
-
-    internal lateinit var game: Game
-
-    internal val numOfRendersPerChange = 2
-    internal var render = 0
 
     override fun create() {
         fieldBatch = SpriteBatch()
@@ -55,6 +31,16 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         Gdx.input.inputProcessor = this
 
     }
+
+    internal lateinit var backgroundTexture: Texture
+    internal lateinit var hexagonClosedTexture: Texture
+    internal lateinit var hexagonFlaggedTexture: Texture
+    internal lateinit var hexagonBombTexture: Texture
+    internal lateinit var hexagonFakeTexture: Texture
+    internal lateinit var hexagonOpenedTextures: Array<Texture>
+
+    internal lateinit var gameOverTexture: Texture
+    internal lateinit var youWonTexture: Texture
 
     private fun importTextures() {
         fun generateTexture(name: String): Texture {
@@ -83,16 +69,37 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     }
 
+    internal lateinit var camera: OrthographicCamera
+    internal lateinit var viewPort: Viewport
+
+    internal val backgroundColor = Color.DARK_GRAY
+
+    internal var windowWidth = 0f
+    internal var windowHeight = 0f
+
+    internal var fieldWidth = 0
+    internal var fieldHeight = 0
+
+    internal var offsetX = 0
+    internal val offsetXbonus = 77
+    internal var offsetY = 0
+    internal val cellSpacingX = 153f
+    internal val cellSpacingY = 45f
+
+    internal lateinit var game: Game
+
+    var dragged = false
+
     private fun setFieldAndCamera() {
         // field
         windowWidth = Gdx.graphics.width.toFloat()
         windowHeight = Gdx.graphics.height.toFloat()
 
-        val fieldWidth = (scaling * windowWidth).toInt()
-        val fieldHeight = (scaling * windowHeight).toInt()
+        fieldWidth = (scaling * windowWidth).toInt()
+        fieldHeight = (scaling * windowHeight).toInt()
 
         val backgroundPixmap = Pixmap(fieldWidth, fieldHeight, Pixmap.Format.RGB565)
-        backgroundPixmap.setColor(Color.DARK_GRAY)
+        backgroundPixmap.setColor(backgroundColor)
         backgroundPixmap.fill()
         backgroundTexture = Texture(backgroundPixmap)
 
@@ -101,8 +108,13 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         var n = 0
         var m = 0
 
-        while (n * cellSpacingY + offsetY + 100 < fieldHeight) n++
-        while (m * cellSpacingX + offsetX + 100 < fieldWidth) m++
+        while (n * cellSpacingY + 100 < fieldHeight) n++
+        if (n % 2 == 0) n--
+        while (m * cellSpacingX + 100 < fieldWidth) m++
+        if (m % 2 == 0) m--
+
+        offsetY = ((fieldHeight - ((n - 1) * cellSpacingY + 100)) / 2).toInt()
+        offsetX = ((fieldWidth - ((m - 1) * cellSpacingX + 100)) / 2).toInt()
 
         game = Game(n, m)
 
@@ -113,22 +125,28 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         camera.zoom = scaling
         camera.update()
 
+        viewPort = ScalingViewport(Scaling.fill, windowWidth, windowHeight, camera)
+
     }
+
+    internal val numOfRendersPerChange = 2
+    internal var render = 0
 
     override fun render() {
         if (render < numOfRendersPerChange) {
-            Gdx.gl.glClearColor(1f, 1f, 1f, 1f)
+            Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
             drawField()
             drawEndScreen()
 
-            render++
-
         }
+
+        render++
 
     }
 
+    internal lateinit var hexagonSprites: MutableList<MutableList<Sprite>>
 
     private fun drawField() {
         fun selectTexture(cell: Cell) = when(cell.state) {
@@ -171,7 +189,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     }
 
     private fun drawEndScreen() {
-        if (game.state != GameState.running) {
+        if (game.state != GameState.running && game.state != GameState.idle) {
             endScreenBatch.begin()
 
             var texture = gameOverTexture
@@ -191,25 +209,81 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     }
 
-
-    override fun dispose() {
-        fieldBatch.dispose()
-
-    }
+    var lastDragPosition = Vector3(Float.NaN, Float.NaN, 0f)
 
     override fun touchDown(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
-        render = numOfRendersPerChange
+        lastDragPosition = camera.unproject(Vector3(p0.toFloat(), p1.toFloat(), 0f))
+        ticks = 0
+        return true
+    }
 
-        println("Click at $p0, $p1, $p2, $p3")
+    val numberOfTicksLongClick = 3
+    var ticks = 0
+
+    override fun touchDragged(p0: Int, p1: Int, p2: Int): Boolean {
+        if (ticks++ < numberOfTicksLongClick) return true
+
+        val p0f = p0.toFloat()
+        val p1f = p1.toFloat()
+
+        val currentDragPosition = camera.unproject(Vector3(p0f, p1f, 0f))
+
+        val drag = currentDragPosition.cpy()
+        drag.sub(lastDragPosition)
+        camera.position.sub(drag)
+
+        val edgeXleft = 0f
+        val edgeXright = fieldWidth.toFloat()
+
+        if (camera.position.x < edgeXleft)
+            camera.position.x = edgeXleft
+        else if (camera.position.x > edgeXright)
+            camera.position.x = edgeXright
+
+        val edgeYbottom = 0f
+        val edgeYtop = fieldHeight.toFloat()
+
+        if (camera.position.y < edgeYbottom)
+            camera.position.y = edgeYbottom
+        else if (camera.position.y > edgeYtop)
+            camera.position.y = edgeYtop
+
+        camera.update()
+
+        startRender()
+
+        dragged = true
+
+        return true
+    }
+
+    override fun touchUp(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
+        if(dragged){
+            dragged = false
+            return true
+        }
 
         val screenClickVector = Vector3(p0.toFloat(), p1.toFloat(), 0f)
         camera.unproject(screenClickVector)
 
-        println("World ${screenClickVector.x}, ${screenClickVector.y}")
+        fun clickInSprite(sprite: Sprite, x: Float, y: Float): Boolean {
+            val center = Vector2(sprite.x + sprite.width / 2f, sprite.y + sprite.height / 2f)
+            val relativeX = x - center.x
+            val relativeY = y - center.y
 
-        fun clickInSprite(sprite: Sprite, x: Float, y: Float)
-                = x > sprite.x && x < sprite.x + sprite.width
-                && y > sprite.y && y < sprite.y + sprite.height
+            var hit = true
+
+            hit = hit && relativeY < 2 * relativeX + sprite.height
+            hit = hit && relativeY < sprite.height / 2f
+            hit = hit && relativeY < sprite.height - 2 * relativeX
+
+            hit = hit && relativeY > 2 * relativeX - sprite.height
+            hit = hit && relativeY > - sprite.height / 2f
+            hit = hit && relativeY > - sprite.height - 2 * relativeX
+
+            return hit
+
+        }
 
         for (row in hexagonSprites)
             for (sprite in row)
@@ -232,10 +306,38 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         startRender()
 
         return true
+    }
 
+    // zoom
+
+    internal val maxZoom = scaling * 2
+
+    override fun scrolled(p0: Int): Boolean {
+
+        var newZoom = (1 + 0.1f * p0) * camera.zoom
+        if (newZoom > maxZoom) newZoom = maxZoom
+
+        camera.zoom = newZoom
+        camera.update()
+
+        startRender()
+
+        return true
     }
 
     fun startRender() { render = 0 }
+
+    override fun resize(p0: Int, p1: Int) {
+        viewPort.update(p0, p1)
+        startRender()
+    }
+
+
+    override fun dispose() {
+        fieldBatch.dispose()
+
+    }
+
 
 
     // useless
@@ -244,28 +346,11 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     }
 
-    override fun resize(p0: Int, p1: Int) {
-
-    }
-
     override fun resume() {
 
     }
 
-
-    override fun touchUp(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
-        return false
-    }
-
-    override fun touchDragged(p0: Int, p1: Int, p2: Int): Boolean {
-        return false
-    }
-
     override fun mouseMoved(p0: Int, p1: Int): Boolean {
-        return false
-    }
-
-    override fun scrolled(p0: Int): Boolean {
         return false
     }
 

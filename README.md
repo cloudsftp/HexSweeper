@@ -7,6 +7,10 @@ Travis build of branch develop:
 This Project uses **Gitflow** for version control
 and **Gradle** for dependencies and builds.
 
+## Download latest Release
+
+[click here](https://github.com/cloudsftp/HexSweeper/releases)
+
 #### Gradle
 
 ##### Run
