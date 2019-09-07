@@ -72,6 +72,8 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     internal lateinit var camera: OrthographicCamera
     internal lateinit var viewPort: Viewport
 
+    internal val backgroundColor = Color.DARK_GRAY
+
     internal var windowWidth = 0f
     internal var windowHeight = 0f
 
@@ -94,7 +96,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         val fieldHeight = (scaling * windowHeight).toInt()
 
         val backgroundPixmap = Pixmap(fieldWidth, fieldHeight, Pixmap.Format.RGB565)
-        backgroundPixmap.setColor(Color.DARK_GRAY)
+        backgroundPixmap.setColor(backgroundColor)
         backgroundPixmap.fill()
         backgroundTexture = Texture(backgroundPixmap)
 
@@ -126,7 +128,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     override fun render() {
         if (render < numOfRendersPerChange) {
-            Gdx.gl.glClearColor(1f, 1f, 1f, 1f)
+            Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
             drawField()
