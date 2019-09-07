@@ -14,6 +14,7 @@
   <restartOnCrash>false</restartOnCrash>
   <manifest>A:\Projects\HexSweeper\launch4j\HEX.manifest</manifest>
   <icon>A:\Projects\HexSweeper\launch4j\favicon.ico</icon>
+  <icon>A:\Projects\HexSweeper\android\assets\icon.ico</icon>
   <jre>
     <path>C:\Program Files\Java\jre1.8.0_211</path>
     <bundledJre64Bit>true</bundledJre64Bit>
