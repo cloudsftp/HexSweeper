@@ -35,8 +35,7 @@ task dist(type: Jar) {
 }
 
 launch4j {
-    mainClassName = mainClassName
-    icon = "android/assets/icon.ico"
+    icon = "$projectDir/../android/assets/icon.ico"
 }
 
 dist.dependsOn classes
