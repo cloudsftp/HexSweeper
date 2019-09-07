@@ -290,10 +290,12 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     // zoom
 
+    internal val maxZoom = scaling * 2
+
     override fun scrolled(p0: Int): Boolean {
 
         var newZoom = (1 + 0.1f * p0) * camera.zoom
-        if (newZoom > scaling) newZoom = scaling
+        if (newZoom > maxZoom) newZoom = maxZoom
 
         camera.zoom = newZoom
         camera.update()
