@@ -75,9 +75,9 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     internal var windowWidth = 0f
     internal var windowHeight = 0f
 
-    internal val offsetX = 50
+    internal var offsetX = 0
     internal val offsetXbonus = 77
-    internal val offsetY = 45
+    internal var offsetY = 0
     internal val cellSpacingX = 153f
     internal val cellSpacingY = 45f
 
@@ -103,10 +103,13 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         var n = 0
         var m = 0
 
-        while (n * cellSpacingY + offsetY + 100 < fieldHeight) n++
+        while (n * cellSpacingY + 100 < fieldHeight) n++
         if (n % 2 == 0) n--
-        while (m * cellSpacingX + offsetX + 100 < fieldWidth) m++
+        while (m * cellSpacingX + 100 < fieldWidth) m++
         if (m % 2 == 0) m--
+
+        offsetY = ((fieldHeight - ((n - 1) * cellSpacingY + 100)) / 2).toInt()
+        offsetX = ((fieldWidth - ((m - 1) * cellSpacingX + 100)) / 2).toInt()
 
         game = Game(n, m)
 
