@@ -20,8 +20,8 @@ buildscript {
 
 allprojects {
 
-    version = 'HEX.01.03'
     ext {
+        versionNumber = '01.03'
         appName = "HexSweeper"
         gdxVersion = '1.9.10'
         roboVMVersion = '2.3.7'
@@ -29,6 +29,8 @@ allprojects {
         ashleyVersion = '1.7.0'
         aiVersion = '1.8.0'
     }
+
+    version = "HEX.${project.versionNumber}"
 
     repositories {
         mavenLocal()
