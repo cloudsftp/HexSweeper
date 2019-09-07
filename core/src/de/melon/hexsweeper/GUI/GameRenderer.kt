@@ -77,6 +77,9 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     internal var windowWidth = 0f
     internal var windowHeight = 0f
 
+    internal var fieldWidth = 0
+    internal var fieldHeight = 0
+
     internal var offsetX = 0
     internal val offsetXbonus = 77
     internal var offsetY = 0
@@ -92,8 +95,8 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         windowWidth = Gdx.graphics.width.toFloat()
         windowHeight = Gdx.graphics.height.toFloat()
 
-        val fieldWidth = (scaling * windowWidth).toInt()
-        val fieldHeight = (scaling * windowHeight).toInt()
+        fieldWidth = (scaling * windowWidth).toInt()
+        fieldHeight = (scaling * windowHeight).toInt()
 
         val backgroundPixmap = Pixmap(fieldWidth, fieldHeight, Pixmap.Format.RGB565)
         backgroundPixmap.setColor(backgroundColor)
@@ -228,6 +231,23 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         val drag = currentDragPosition.cpy()
         drag.sub(lastDragPosition)
         camera.position.sub(drag)
+
+        val edgeXleft = 0f
+        val edgeXright = fieldWidth.toFloat()
+
+        if (camera.position.x < edgeXleft)
+            camera.position.x = edgeXleft
+        else if (camera.position.x > edgeXright)
+            camera.position.x = edgeXright
+
+        val edgeYbottom = 0f
+        val edgeYtop = fieldHeight.toFloat()
+
+        if (camera.position.y < edgeYbottom)
+            camera.position.y = edgeYbottom
+        else if (camera.position.y > edgeYtop)
+            camera.position.y = edgeYtop
+
         camera.update()
 
         startRender()
@@ -290,10 +310,12 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     // zoom
 
+    internal val maxZoom = scaling * 2
+
     override fun scrolled(p0: Int): Boolean {
 
         var newZoom = (1 + 0.1f * p0) * camera.zoom
-        if (newZoom > scaling) newZoom = scaling
+        if (newZoom > maxZoom) newZoom = maxZoom
 
         camera.zoom = newZoom
         camera.update()
