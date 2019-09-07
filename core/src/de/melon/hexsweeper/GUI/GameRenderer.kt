@@ -232,16 +232,16 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         drag.sub(lastDragPosition)
         camera.position.sub(drag)
 
-        val edgeXleft = - fieldWidth / 2f
-        val edgeXright = fieldWidth * 1.5f
+        val edgeXleft = 0f
+        val edgeXright = fieldWidth.toFloat()
 
         if (camera.position.x < edgeXleft)
             camera.position.x = edgeXleft
         else if (camera.position.x > edgeXright)
             camera.position.x = edgeXright
 
-        val edgeYbottom = - fieldHeight / 2f
-        val edgeYtop = fieldHeight * 1.5f
+        val edgeYbottom = 0f
+        val edgeYtop = fieldHeight.toFloat()
 
         if (camera.position.y < edgeYbottom)
             camera.position.y = edgeYbottom
