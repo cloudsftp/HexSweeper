@@ -20,11 +20,11 @@ import de.melon.hexsweeper.logic.GameState
 class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProcessor {
 
     internal lateinit var fieldBatch: SpriteBatch
-    internal lateinit var endScreenBatch: SpriteBatch
+    internal lateinit var fontBatch: SpriteBatch
 
     override fun create() {
         fieldBatch = SpriteBatch()
-        endScreenBatch = SpriteBatch()
+        fontBatch = SpriteBatch()
 
         importTextures()
         setFont()
@@ -64,12 +64,12 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     }
 
-    internal lateinit var endScreenFont: BitmapFont
+    internal lateinit var statusFont: BitmapFont
 
     fun setFont() {
-        endScreenFont = BitmapFont()
-        endScreenFont.color = Color.WHITE
-        endScreenFont.data.scale(0.5f)
+        statusFont = BitmapFont()
+        statusFont.color = Color.WHITE
+        statusFont.data.scale(0.5f)
 
     }
 
@@ -100,7 +100,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         windowHeight = Gdx.graphics.height.toFloat()
 
         fieldWidth = (scaling * windowWidth).toInt()
-        fieldHeight = (scaling * windowHeight).toInt()
+        fieldHeight = (scaling * windowHeight).toInt() - 100
 
         val backgroundPixmap = Pixmap(fieldWidth, fieldHeight, Pixmap.Format.RGB565)
         backgroundPixmap.setColor(backgroundColor)
@@ -124,7 +124,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         // camera
         camera = OrthographicCamera(windowWidth, windowHeight)
-        val center = Vector2(fieldWidth / 2f, fieldHeight / 2f)
+        val center = Vector2(fieldWidth / 2f, (fieldHeight + (windowHeight * scaling - fieldHeight)) / 2f)
         camera.position.set(center, 0f)
         camera.zoom = scaling
         camera.update()
@@ -142,7 +142,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
             drawField()
-            drawEndScreen()
+            drawFonts()
 
         }
 
@@ -192,18 +192,34 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     }
 
-    private fun drawEndScreen() {
-        if (game.state != GameState.running && game.state != GameState.idle) {
-            endScreenBatch.begin()
+    private fun drawFonts() {
+        fontBatch.begin()
 
-            var message = "Game Over!"
-            if (game.state == GameState.win) message = "You Won!"
-
-            endScreenFont.draw(endScreenBatch, message, 100f, 100f)
-
-            endScreenBatch.end()
+        var message = ""
+        when (game.state) {
+            GameState.idle -> {
+                message = "Click somewhere to start the Game"
+                statusFont.color = Color.WHITE
+            }
+            GameState.running -> {
+                message = "running"
+                statusFont.color = Color.WHITE
+            }
+            GameState.loose -> {
+                message = "Game Over!"
+                statusFont.color = Color.RED
+            }
+            GameState.win -> {
+                message = "You Won!"
+                statusFont.color = Color.GREEN
+            }
 
         }
+
+        statusFont.draw(fontBatch, message, 50f, fieldHeight / scaling + 32f)
+        print(fieldHeight / scaling)
+
+        fontBatch.end()
 
     }
 
