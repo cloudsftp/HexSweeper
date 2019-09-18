@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.*
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
@@ -26,6 +27,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         endScreenBatch = SpriteBatch()
 
         importTextures()
+        setFont()
         setFieldAndCamera()
 
         Gdx.input.inputProcessor = this
@@ -38,9 +40,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     internal lateinit var hexagonBombTexture: Texture
     internal lateinit var hexagonFakeTexture: Texture
     internal lateinit var hexagonOpenedTextures: Array<Texture>
-
-    internal lateinit var gameOverTexture: Texture
-    internal lateinit var youWonTexture: Texture
 
     private fun importTextures() {
         fun generateTexture(name: String): Texture {
@@ -55,7 +54,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         }
 
         fun generateHexagonTexture(name: String) = generateTexture("cells/$name")
-        fun generateScreenTexture(name: String) = generateTexture("screens/$name")
 
         hexagonOpenedTextures = Array(7) { i -> generateHexagonTexture("opened_$i.png") }
 
@@ -64,8 +62,14 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         hexagonBombTexture = generateHexagonTexture("bomb.png")
         hexagonFakeTexture = generateHexagonTexture("fake.png")
 
-        gameOverTexture = generateScreenTexture("gameover.png")
-        youWonTexture = generateScreenTexture("youwon.png")
+    }
+
+    internal lateinit var endScreenFont: BitmapFont
+
+    fun setFont() {
+        endScreenFont = BitmapFont()
+        endScreenFont.color = Color.WHITE
+        endScreenFont.data.scale(0.5f)
 
     }
 
@@ -192,16 +196,10 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         if (game.state != GameState.running && game.state != GameState.idle) {
             endScreenBatch.begin()
 
-            var texture = gameOverTexture
-            if (game.state == GameState.win) texture = youWonTexture
+            var message = "Game Over!"
+            if (game.state == GameState.win) message = "You Won!"
 
-            val sprite = Sprite(texture)
-
-            val endScreenOffsetX = (windowWidth - texture.width) / 2f
-            val endScreenOffsetY = (windowHeight - texture.height) / 2f
-
-            sprite.setPosition(endScreenOffsetX, endScreenOffsetY)
-            sprite.draw(endScreenBatch)
+            endScreenFont.draw(endScreenBatch, message, 100f, 100f)
 
             endScreenBatch.end()
 
