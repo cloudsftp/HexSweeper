@@ -65,18 +65,23 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     }
 
     internal lateinit var statusFont: BitmapFont
+    internal lateinit var timerFont: BitmapFont
 
     fun setFont() {
         statusFont = BitmapFont()
-        statusFont.color = Color.WHITE
         statusFont.data.scale(0.5f)
+
+        timerFont = BitmapFont()
+        timerFont.color = Color.WHITE
+        timerFont.data.scale(0.5f)
 
     }
 
     internal lateinit var camera: OrthographicCamera
     internal lateinit var viewPort: Viewport
 
-    internal val backgroundColor = Color.DARK_GRAY
+    internal val backgroundColorTop = Color.BLUE
+    internal val backgroundColorField = Color.DARK_GRAY
 
     internal var windowWidth = 0f
     internal var windowHeight = 0f
@@ -103,7 +108,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         fieldHeight = (scaling * windowHeight).toInt() - 100
 
         val backgroundPixmap = Pixmap(fieldWidth, fieldHeight, Pixmap.Format.RGB565)
-        backgroundPixmap.setColor(backgroundColor)
+        backgroundPixmap.setColor(backgroundColorField)
         backgroundPixmap.fill()
         backgroundTexture = Texture(backgroundPixmap)
 
@@ -138,7 +143,8 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     override fun render() {
         if (render < numOfRendersPerChange) {
-            Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a)
+            Gdx.gl.glClearColor(backgroundColorTop.r, backgroundColorTop.g,
+                                backgroundColorTop.b, backgroundColorTop.a)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
             drawField()
@@ -216,8 +222,9 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         }
 
-        statusFont.draw(fontBatch, message, 50f, fieldHeight / scaling + 32f)
-        print(fieldHeight / scaling)
+        val yPosition = fieldHeight / scaling + 32f
+        statusFont.draw(fontBatch, message, 50f, yPosition)
+        timerFont.draw(fontBatch, String.format("%d", game.time.get()), 900f, yPosition)
 
         fontBatch.end()
 
