@@ -8,14 +8,17 @@ class Game(val n: Int, val m: Int) {
     var timer = Timer(this)
     var time = AtomicInteger(0)
 
+    init {
+        timer.start()
+    }
+
     internal var state: GameState by Delegates.observable(GameState.idle) {
         prop, old, new ->
         if (new != GameState.running) {
             timer.stopCounting()
         } else {
             time = AtomicInteger(0)
-            timer = Timer(this)
-            timer.start()
+            timer.startCounting()
         }
     }
 

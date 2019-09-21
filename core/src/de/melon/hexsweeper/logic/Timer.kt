@@ -7,10 +7,16 @@ class Timer(val game: Game) : Thread() {
     var running = AtomicBoolean(true)
 
     override fun run() {
-        while (running.get()) {
-            sleep(1000)
-            game.time.getAndAdd(1)
+        while (true) {
+            while (running.get()) {
+                sleep(1000)
+                game.time.getAndAdd(1)
+            }
         }
+    }
+
+    fun startCounting() {
+        running.getAndSet(true)
     }
 
     fun stopCounting() {
