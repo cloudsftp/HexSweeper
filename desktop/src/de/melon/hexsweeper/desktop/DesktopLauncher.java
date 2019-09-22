@@ -1,6 +1,7 @@
 package de.melon.hexsweeper.desktop;
 
 import com.badlogic.gdx.Files;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import de.melon.hexsweeper.GUI.GameRenderer;
@@ -20,6 +21,11 @@ public class DesktopLauncher {
 		config.height = 700;
 		config.width = 1000;
 
-		new LwjglApplication(new GameRenderer(2), config);
+		GameRenderer renderer = new GameRenderer(2);
+		new LwjglApplication(renderer, config);
+
+		GameInput input = new GameInput(renderer);
+		Gdx.input.setInputProcessor(input);
+
 	}
 }

@@ -17,7 +17,7 @@ import de.melon.hexsweeper.logic.CellState
 import de.melon.hexsweeper.logic.Game
 import de.melon.hexsweeper.logic.GameState
 
-class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProcessor {
+class GameRenderer(internal val scaling: Float) : ApplicationListener {
 
     internal lateinit var fieldBatch: SpriteBatch
     internal lateinit var fontBatch: SpriteBatch
@@ -29,8 +29,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         importTextures()
         setFont()
         setFieldAndCamera()
-
-        Gdx.input.inputProcessor = this
 
     }
 
@@ -232,22 +230,13 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     var lastDragPosition = Vector3(Float.NaN, Float.NaN, 0f)
 
-    override fun touchDown(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
-        lastDragPosition = camera.unproject(Vector3(p0.toFloat(), p1.toFloat(), 0f))
-        ticks = 0
-        return true
+    fun processTouchDown(p0: Float, p1: Float) {
+        lastDragPosition = camera.unproject(Vector3(p0, p1, 0f))
+
     }
 
-    val numberOfTicksLongClick = 3
-    var ticks = 0
-
-    override fun touchDragged(p0: Int, p1: Int, p2: Int): Boolean {
-        if (ticks++ < numberOfTicksLongClick) return true
-
-        val p0f = p0.toFloat()
-        val p1f = p1.toFloat()
-
-        val currentDragPosition = camera.unproject(Vector3(p0f, p1f, 0f))
+    fun processDrag(p0: Float, p1: Float) {
+        val currentDragPosition = camera.unproject(Vector3(p0, p1, 0f))
 
         val drag = currentDragPosition.cpy()
         drag.sub(lastDragPosition)
@@ -274,17 +263,15 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         startRender()
 
         dragged = true
-
-        return true
     }
 
-    override fun touchUp(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
+    fun processTouchUp(p0: Float, p1: Float, p3: Int) {
         if(dragged){
             dragged = false
-            return true
+            return
         }
 
-        val screenClickVector = Vector3(p0.toFloat(), p1.toFloat(), 0f)
+        val screenClickVector = Vector3(p0, p1, 0f)
         camera.unproject(screenClickVector)
 
         fun clickInSprite(sprite: Sprite, x: Float, y: Float): Boolean {
@@ -326,15 +313,13 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         startRender()
 
-        return true
     }
 
     // zoom
 
     internal val maxZoom = scaling * 2
 
-    override fun scrolled(p0: Int): Boolean {
-
+    fun processScroll(p0: Int) {
         var newZoom = (1 + 0.1f * p0) * camera.zoom
         if (newZoom > maxZoom) newZoom = maxZoom
 
@@ -343,7 +328,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         startRender()
 
-        return true
     }
 
     fun startRender() { render = 0 }
@@ -361,7 +345,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
 
 
-    // useless
+    // useles
 
     override fun pause() {
 
@@ -369,22 +353,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     override fun resume() {
 
-    }
-
-    override fun mouseMoved(p0: Int, p1: Int): Boolean {
-        return false
-    }
-
-    override fun keyTyped(p0: Char): Boolean {
-        return false
-    }
-
-    override fun keyDown(p0: Int): Boolean {
-        return false
-    }
-
-    override fun keyUp(p0: Int): Boolean {
-        return false
     }
 
 }
