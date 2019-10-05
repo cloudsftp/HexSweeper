@@ -9,7 +9,7 @@ class Game(val n: Int, val m: Int, val gameRenderer: GameRenderer) {
     var timer = Timer(this)
     var time = AtomicInteger(0)
 
-    internal var field = Field(n, m)
+    internal var field = Field(n, m, this)
 
     init {
         timer.start()
@@ -25,9 +25,9 @@ class Game(val n: Int, val m: Int, val gameRenderer: GameRenderer) {
             timer.startCounting()
         }
 
-        gameRenderer.startRender()
-
     }
+
+    fun render() = gameRenderer.startRender()
 
     fun start(i: Int, j: Int) {
         do buildField() while (field.cells[i][j].bomb)
@@ -77,7 +77,7 @@ class Game(val n: Int, val m: Int, val gameRenderer: GameRenderer) {
 
     }
 
-    fun buildField() { field = Field(n, m) }
+    fun buildField() { field = Field(n, m, this) }
 
     fun checkForWin() {
         var win = true

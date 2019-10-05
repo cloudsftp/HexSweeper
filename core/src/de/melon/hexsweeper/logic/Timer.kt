@@ -11,7 +11,7 @@ class Timer(val game: Game) : Thread() {
             while (running.get()) {
                 sleep(1000)
                 game.time.getAndAdd(1)
-                game.gameRenderer.startRender()
+                game.render()
             }
         }
     }
