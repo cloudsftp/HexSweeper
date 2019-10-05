@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class Timer(val game: Game) : Thread() {
 
-    val running = AtomicBoolean(true)
+    val running = AtomicBoolean(false)
     val time = AtomicInteger(0)
 
     override fun run() {
