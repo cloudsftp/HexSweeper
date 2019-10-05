@@ -16,6 +16,7 @@ import de.melon.hexsweeper.logic.Cell
 import de.melon.hexsweeper.logic.CellState
 import de.melon.hexsweeper.logic.Game
 import de.melon.hexsweeper.logic.GameState
+import kotlin.properties.Delegates
 
 class GameRenderer(internal val scaling: Float) : ApplicationListener {
 
@@ -123,7 +124,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener {
         offsetY = ((fieldHeight - ((n - 1) * cellSpacingY + 100)) / 2).toInt()
         offsetX = ((fieldWidth - ((m - 1) * cellSpacingX + 100)) / 2).toInt()
 
-        game = Game(n, m)
+        game = Game(n, m, this)
 
         // camera
         camera = OrthographicCamera(windowWidth, windowHeight)
@@ -260,8 +261,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener {
 
         camera.update()
 
-        startRender()
-
         dragged = true
     }
 
@@ -311,8 +310,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener {
 
                 }
 
-        startRender()
-
     }
 
     // zoom
@@ -325,8 +322,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener {
 
         camera.zoom = newZoom
         camera.update()
-
-        startRender()
 
     }
 

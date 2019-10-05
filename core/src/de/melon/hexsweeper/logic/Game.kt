@@ -1,31 +1,35 @@
 package de.melon.hexsweeper.logic
 
+import de.melon.hexsweeper.GUI.GameRenderer
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.properties.Delegates
 
-class Game(val n: Int, val m: Int) {
+class Game(val n: Int, val m: Int, val gameRenderer: GameRenderer) {
 
     var timer = Timer(this)
     var time = AtomicInteger(0)
+
+    internal var field = Field(n, m)
 
     init {
         timer.start()
     }
 
     internal var state: GameState by Delegates.observable(GameState.idle) {
-        prop, old, new ->
+        _, _, new ->
+
         if (new != GameState.running) {
             timer.stopCounting()
         } else {
             time = AtomicInteger(0)
             timer.startCounting()
         }
+
+        gameRenderer.startRender()
+
     }
 
-    internal var field = Field(n, m)
-
     fun start(i: Int, j: Int) {
-
         do buildField() while (field.cells[i][j].bomb)
         state = GameState.running
 
