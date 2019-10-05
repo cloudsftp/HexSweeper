@@ -2,9 +2,9 @@ package de.melon.hexsweeper.logic
 
 import kotlin.random.Random.Default.nextDouble
 
-class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
+class Field(val cells: Array<Array<Cell>>, val game: Game) : Iterable<Array<Cell>> {
 
-    constructor(n: Int, m:Int, prob: Double = 0.2) : this(buildArrayWithDim(n, m, prob))
+    constructor(n: Int, m: Int, game: Game, prob: Double = 0.2) : this(buildArrayWithDim(n, m, prob), game)
 
     init {
         for (i in cells.indices)
@@ -24,32 +24,37 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
     }
 
     fun open(i: Int, j: Int): Boolean {
+        var stillAlive = true
 
         if(cells[i][j].state == CellState.closed) {
-            if (cells[i][j].open()) {
+            stillAlive = cells[i][j].open()
+
+            if (stillAlive) {
                 if (cells[i][j].numOfBombs == 0)
                     for ((I, J) in getAdjacentIndices(i, j))
                         open(I, J)
 
-                return true
-
             } else {
-
                 explodeBombs()
 
-                return false
-
             }
-        } else {
-            return true
+
         }
+
+        render()
+
+        return stillAlive
 
     }
 
     fun toggleFlag(i: Int, j: Int) {
         cells[i][j].toggleFlag()
 
+        render()
+
     }
+
+    fun render() = game.render()
 
     fun getAdjacentIndices(i: Int, j: Int): List<Pair<Int, Int>> {
         val list = mutableListOf<Pair<Int, Int>>()
@@ -81,7 +86,6 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
     }
 
     fun explodeBombs() {
-
         for (row in cells)
             for (cell in row)
                 if (cell.bomb)
@@ -94,9 +98,7 @@ class Field(val cells: Array<Array<Cell>>) : Iterable<Array<Cell>> {
     override fun iterator(): Iterator<Array<Cell>> = cells.iterator()
 
     companion object {
-
         private fun buildArrayWithDim(n: Int, m: Int, prob: Double): Array<Array<Cell>> {
-
             val list = mutableListOf<Array<Cell>>()
 
             for (i in 0 until n) {

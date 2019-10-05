@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.*
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
@@ -15,20 +16,20 @@ import de.melon.hexsweeper.logic.Cell
 import de.melon.hexsweeper.logic.CellState
 import de.melon.hexsweeper.logic.Game
 import de.melon.hexsweeper.logic.GameState
+import kotlin.properties.Delegates
 
-class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProcessor {
+class GameRenderer(internal val scaling: Float) : ApplicationListener {
 
     internal lateinit var fieldBatch: SpriteBatch
-    internal lateinit var endScreenBatch: SpriteBatch
+    internal lateinit var fontBatch: SpriteBatch
 
     override fun create() {
         fieldBatch = SpriteBatch()
-        endScreenBatch = SpriteBatch()
+        fontBatch = SpriteBatch()
 
         importTextures()
+        setFont()
         setFieldAndCamera()
-
-        Gdx.input.inputProcessor = this
 
     }
 
@@ -38,9 +39,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
     internal lateinit var hexagonBombTexture: Texture
     internal lateinit var hexagonFakeTexture: Texture
     internal lateinit var hexagonOpenedTextures: Array<Texture>
-
-    internal lateinit var gameOverTexture: Texture
-    internal lateinit var youWonTexture: Texture
 
     private fun importTextures() {
         fun generateTexture(name: String): Texture {
@@ -55,7 +53,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         }
 
         fun generateHexagonTexture(name: String) = generateTexture("cells/$name")
-        fun generateScreenTexture(name: String) = generateTexture("screens/$name")
 
         hexagonOpenedTextures = Array(7) { i -> generateHexagonTexture("opened_$i.png") }
 
@@ -64,15 +61,26 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         hexagonBombTexture = generateHexagonTexture("bomb.png")
         hexagonFakeTexture = generateHexagonTexture("fake.png")
 
-        gameOverTexture = generateScreenTexture("gameover.png")
-        youWonTexture = generateScreenTexture("youwon.png")
+    }
+
+    internal lateinit var statusFont: BitmapFont
+    internal lateinit var timerFont: BitmapFont
+
+    fun setFont() {
+        statusFont = BitmapFont()
+        statusFont.data.scale(0.5f)
+
+        timerFont = BitmapFont()
+        timerFont.color = Color.WHITE
+        timerFont.data.scale(0.5f)
 
     }
 
     internal lateinit var camera: OrthographicCamera
     internal lateinit var viewPort: Viewport
 
-    internal val backgroundColor = Color.DARK_GRAY
+    internal val backgroundColorTop = Color.BLUE
+    internal val backgroundColorField = Color.DARK_GRAY
 
     internal var windowWidth = 0f
     internal var windowHeight = 0f
@@ -96,10 +104,10 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         windowHeight = Gdx.graphics.height.toFloat()
 
         fieldWidth = (scaling * windowWidth).toInt()
-        fieldHeight = (scaling * windowHeight).toInt()
+        fieldHeight = (scaling * windowHeight).toInt() - 100
 
         val backgroundPixmap = Pixmap(fieldWidth, fieldHeight, Pixmap.Format.RGB565)
-        backgroundPixmap.setColor(backgroundColor)
+        backgroundPixmap.setColor(backgroundColorField)
         backgroundPixmap.fill()
         backgroundTexture = Texture(backgroundPixmap)
 
@@ -116,11 +124,11 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
         offsetY = ((fieldHeight - ((n - 1) * cellSpacingY + 100)) / 2).toInt()
         offsetX = ((fieldWidth - ((m - 1) * cellSpacingX + 100)) / 2).toInt()
 
-        game = Game(n, m)
+        game = Game(n, m, this)
 
         // camera
         camera = OrthographicCamera(windowWidth, windowHeight)
-        val center = Vector2(fieldWidth / 2f, fieldHeight / 2f)
+        val center = Vector2(fieldWidth / 2f, (fieldHeight + (windowHeight * scaling - fieldHeight)) / 2f)
         camera.position.set(center, 0f)
         camera.zoom = scaling
         camera.update()
@@ -134,11 +142,12 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     override fun render() {
         if (render < numOfRendersPerChange) {
-            Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a)
+            Gdx.gl.glClearColor(backgroundColorTop.r, backgroundColorTop.g,
+                                backgroundColorTop.b, backgroundColorTop.a)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
             drawField()
-            drawEndScreen()
+            drawFonts()
 
         }
 
@@ -188,45 +197,47 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     }
 
-    private fun drawEndScreen() {
-        if (game.state != GameState.running && game.state != GameState.idle) {
-            endScreenBatch.begin()
+    private fun drawFonts() {
+        fontBatch.begin()
 
-            var texture = gameOverTexture
-            if (game.state == GameState.win) texture = youWonTexture
-
-            val sprite = Sprite(texture)
-
-            val endScreenOffsetX = (windowWidth - texture.width) / 2f
-            val endScreenOffsetY = (windowHeight - texture.height) / 2f
-
-            sprite.setPosition(endScreenOffsetX, endScreenOffsetY)
-            sprite.draw(endScreenBatch)
-
-            endScreenBatch.end()
+        var message = ""
+        when (game.state) {
+            GameState.idle -> {
+                message = "Click somewhere to start the Game"
+                statusFont.color = Color.WHITE
+            }
+            GameState.running -> {
+                message = "running"
+                statusFont.color = Color.WHITE
+            }
+            GameState.loose -> {
+                message = "Game Over!"
+                statusFont.color = Color.RED
+            }
+            GameState.win -> {
+                message = "You Won!"
+                statusFont.color = Color.GREEN
+            }
 
         }
+
+        val yPosition = fieldHeight / scaling + 32f
+        statusFont.draw(fontBatch, message, 50f, yPosition)
+        timerFont.draw(fontBatch, String.format("%d", game.getTime()), 900f, yPosition)
+
+        fontBatch.end()
 
     }
 
     var lastDragPosition = Vector3(Float.NaN, Float.NaN, 0f)
 
-    override fun touchDown(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
-        lastDragPosition = camera.unproject(Vector3(p0.toFloat(), p1.toFloat(), 0f))
-        ticks = 0
-        return true
+    fun processTouchDown(p0: Float, p1: Float) {
+        lastDragPosition = camera.unproject(Vector3(p0, p1, 0f))
+
     }
 
-    val numberOfTicksLongClick = 3
-    var ticks = 0
-
-    override fun touchDragged(p0: Int, p1: Int, p2: Int): Boolean {
-        if (ticks++ < numberOfTicksLongClick) return true
-
-        val p0f = p0.toFloat()
-        val p1f = p1.toFloat()
-
-        val currentDragPosition = camera.unproject(Vector3(p0f, p1f, 0f))
+    fun processDrag(p0: Float, p1: Float) {
+        val currentDragPosition = camera.unproject(Vector3(p0, p1, 0f))
 
         val drag = currentDragPosition.cpy()
         drag.sub(lastDragPosition)
@@ -250,20 +261,16 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
         camera.update()
 
-        startRender()
-
         dragged = true
-
-        return true
     }
 
-    override fun touchUp(p0: Int, p1: Int, p2: Int, p3: Int): Boolean {
+    fun processTouchUp(p0: Float, p1: Float, p3: Int) {
         if(dragged){
             dragged = false
-            return true
+            return
         }
 
-        val screenClickVector = Vector3(p0.toFloat(), p1.toFloat(), 0f)
+        val screenClickVector = Vector3(p0, p1, 0f)
         camera.unproject(screenClickVector)
 
         fun clickInSprite(sprite: Sprite, x: Float, y: Float): Boolean {
@@ -303,26 +310,19 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
                 }
 
-        startRender()
-
-        return true
     }
 
     // zoom
 
     internal val maxZoom = scaling * 2
 
-    override fun scrolled(p0: Int): Boolean {
-
+    fun processScroll(p0: Int) {
         var newZoom = (1 + 0.1f * p0) * camera.zoom
         if (newZoom > maxZoom) newZoom = maxZoom
 
         camera.zoom = newZoom
         camera.update()
 
-        startRender()
-
-        return true
     }
 
     fun startRender() { render = 0 }
@@ -340,7 +340,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
 
 
-    // useless
+    // useles
 
     override fun pause() {
 
@@ -348,22 +348,6 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener, InputProc
 
     override fun resume() {
 
-    }
-
-    override fun mouseMoved(p0: Int, p1: Int): Boolean {
-        return false
-    }
-
-    override fun keyTyped(p0: Char): Boolean {
-        return false
-    }
-
-    override fun keyDown(p0: Int): Boolean {
-        return false
-    }
-
-    override fun keyUp(p0: Int): Boolean {
-        return false
     }
 
 }
