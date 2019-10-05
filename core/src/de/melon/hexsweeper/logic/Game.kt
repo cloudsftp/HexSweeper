@@ -23,6 +23,8 @@ class Game(val n: Int, val m: Int, val gameRenderer: GameRenderer) {
         else
             timer.startCounting()
 
+        render()
+
     }
 
     fun render() = gameRenderer.startRender()
