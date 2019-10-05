@@ -7,7 +7,7 @@ import kotlin.properties.Delegates
 class Game(val n: Int, val m: Int, val gameRenderer: GameRenderer) {
 
     var timer = Timer(this)
-    var time = AtomicInteger(0)
+    fun getTime() = timer.time.get()
 
     internal var field = Field(n, m, this)
 
@@ -17,13 +17,11 @@ class Game(val n: Int, val m: Int, val gameRenderer: GameRenderer) {
 
     internal var state: GameState by Delegates.observable(GameState.idle) {
         _, _, new ->
-
-        if (new != GameState.running) {
+        if (new != GameState.running)
             timer.stopCounting()
-        } else {
-            time = AtomicInteger(0)
+
+        else
             timer.startCounting()
-        }
 
     }
 
