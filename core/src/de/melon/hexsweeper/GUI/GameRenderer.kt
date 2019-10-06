@@ -260,6 +260,8 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener {
 
         camera.update()
 
+        startRender()
+
         dragged = true
     }
 
@@ -321,6 +323,8 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener {
 
         camera.zoom = newZoom
         camera.update()
+
+        startRender()
 
     }
 
