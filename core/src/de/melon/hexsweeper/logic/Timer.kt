@@ -5,26 +5,26 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class Timer(val game: Game) : Thread() {
 
-    val running = AtomicBoolean(false)
+    private val running = AtomicBoolean(false)
     val time = AtomicInteger(0)
 
     override fun run() {
         while (true) {
             while (running.get()) {
+                game.render()
                 sleep(1000)
                 time.getAndAdd(1)
-                game.render()
             }
         }
     }
 
     fun startCounting() {
-        time.getAndSet(0)
-        running.getAndSet(true)
+        time.set(0)
+        running.set(true)
     }
 
     fun stopCounting() {
-        running.getAndSet(false)
+        running.set(false)
     }
 
 }
