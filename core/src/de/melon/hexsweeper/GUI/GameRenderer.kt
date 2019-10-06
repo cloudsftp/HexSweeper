@@ -220,7 +220,7 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener {
 
         }
 
-        val yPosition = fieldHeight / scaling + 32f
+        val yPosition = fieldHeight / scaling + 35f
         statusFont.draw(fontBatch, message, 50f, yPosition)
         timerFont.draw(fontBatch, String.format("%d", game.getTime()), 900f, yPosition)
 
