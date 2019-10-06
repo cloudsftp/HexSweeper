@@ -67,12 +67,11 @@ class GameRenderer(internal val scaling: Float) : ApplicationListener {
     internal lateinit var timerFont: BitmapFont
 
     fun setFont() {
-        statusFont = BitmapFont()
-        statusFont.data.scale(0.5f)
+        statusFont = BitmapFont(Gdx.files.internal("screens/calibri.fnt"))
+        statusFont.color = Color.WHITE
 
-        timerFont = BitmapFont()
+        timerFont = BitmapFont(Gdx.files.internal("screens/calibri.fnt"))
         timerFont.color = Color.WHITE
-        timerFont.data.scale(0.5f)
 
     }
 
