@@ -12,7 +12,6 @@ task run(dependsOn: classes, type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
     workingDir = project.assetsDir
-    ignoreExitValue = true
 }
 
 task debug(dependsOn: classes, type: JavaExec) {
@@ -20,18 +19,16 @@ task debug(dependsOn: classes, type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
     workingDir = project.assetsDir
-    ignoreExitValue = true
     debug = true
 }
 
-task dist(type: Jar) {
+jar {
     manifest {
         attributes 'Main-Class': project.mainClassName
     }
     from {
         configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    with jar
 }
 
 launch4j {
@@ -39,5 +36,3 @@ launch4j {
     mainClassName = project.mainClassName
     icon = "$projectDir/../android/assets/icon.ico"
 }
-
-dist.dependsOn classes
