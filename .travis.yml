@@ -7,8 +7,7 @@ before_script:
   - echo org.gradle.daemon=false >> $HOME/.gradle/gradle.properties
 
 script:
-  - ./gradlew :desktop:launch4j
-  - ./gradlew :desktop:jar
+  - ./gradlew :desktop:createExe
 
 before_cache: rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 cache:
